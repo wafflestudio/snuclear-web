@@ -298,33 +298,6 @@
   color: #333;
 }
 
-.session-detail-header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.session-qr-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.session-qr-img {
-  width: 140px;
-  height: 140px;
-  display: block;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-}
-
-.session-qr-label {
-  font-size: 11px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
 .view-more-btn {
   padding: 8px 20px;
   border-radius: 8px;

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import QRCode from 'qrcode';
 import { usePracticeSessionDetailQuery } from '@entities/user';
 import type { PracticeAttemptResult } from '@entities/user';
 import '@pages/mypage/mypage.css';
@@ -23,58 +22,16 @@ const MyPageHeader: React.FC = () => {
   );
 };
 
-function encodeShareData(data: object): string {
-  const json = JSON.stringify(data);
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(json);
-  let binary = '';
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return btoa(binary);
-}
-
 const PracticeSessionDetail: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const fromHome = searchParams.get('from') === 'home';
   const [showAllAttempts, setShowAllAttempts] = useState(false);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   const { data: sessionDetail, isLoading } = usePracticeSessionDetailQuery(
     Number(sessionId)
   );
-
-  useEffect(() => {
-    if (!sessionDetail) return;
-
-    const compactData = {
-      d: sessionDetail.practiceAt,
-      t: sessionDetail.totalAttempts,
-      s: sessionDetail.successCount,
-      a: sessionDetail.attempts.map((a) => ({
-        c: a.courseTitle,
-        r: a.reactionTime,
-        p: a.percentile,
-        ok: a.isSuccess,
-      })),
-    };
-
-    const encoded = encodeShareData(compactData);
-    const shareUrl = `${window.location.origin}/session-share?d=${encoded}`;
-
-    QRCode.toDataURL(shareUrl, {
-      width: 240,
-      margin: 2,
-      errorCorrectionLevel: 'L',
-      color: { dark: '#111827', light: '#ffffff' },
-    })
-      .then(setQrDataUrl)
-      .catch(console.error);
-
-    return () => {
-      setQrDataUrl(null);
-    };
-  }, [sessionDetail]);
 
   if (isLoading) {
     return (
@@ -114,26 +71,14 @@ const PracticeSessionDetail: React.FC = () => {
         <section className="results-section">
           <div className="results-header">
             <h2 className="results-title">연습 세션 상세 조회</h2>
-            <div className="session-detail-header-right">
-              {qrDataUrl && (
-                <div className="session-qr-box">
-                  <img
-                    src={qrDataUrl}
-                    alt="공유 QR 코드"
-                    className="session-qr-img"
-                  />
-                  <span className="session-qr-label">QR 공유</span>
-                </div>
-              )}
-              {sessionDetail.attempts && sessionDetail.attempts.length > 3 && (
-                <button
-                  className="view-more-btn"
-                  onClick={() => setShowAllAttempts(!showAllAttempts)}
-                >
-                  {showAllAttempts ? '간단히 보기' : '더보기 +'}
-                </button>
-              )}
-            </div>
+            {sessionDetail.attempts && sessionDetail.attempts.length > 3 && (
+              <button
+                className="view-more-btn"
+                onClick={() => setShowAllAttempts(!showAllAttempts)}
+              >
+                {showAllAttempts ? '간단히 보기' : '더보기 +'}
+              </button>
+            )}
           </div>
 
           <div className="session-detail-info">
@@ -162,26 +107,29 @@ const PracticeSessionDetail: React.FC = () => {
                 ).map((detail: PracticeAttemptResult, index: number) => {
                   const isSuccess = detail.isSuccess === true;
                   return (
-                    <div key={index} className="session-detail-item">
-                      <div className="session-detail-course">
-                        <span className="session-detail-course-title">
-                          {detail.courseTitle}
-                        </span>
-                        <span
-                          className={`session-detail-badge ${isSuccess ? 'success' : 'fail'}`}
-                        >
-                          {isSuccess ? '성공' : '실패'}
-                        </span>
-                      </div>
-                      <span className="session-detail-col-reaction session-detail-value">
-                        {detail.reactionTime}ms
+                  <div
+                    key={index}
+                    className="session-detail-item"
+                  >
+                    <div className="session-detail-course">
+                      <span className="session-detail-course-title">
+                        {detail.courseTitle}
                       </span>
-                      <span className="session-detail-col-percentile session-detail-value">
-                        {detail.percentile
-                          ? `상위 ${(detail.percentile * 100).toFixed(1)}%`
-                          : '-'}
+                      <span
+                        className={`session-detail-badge ${isSuccess ? 'success' : 'fail'}`}
+                      >
+                        {isSuccess ? '성공' : '실패'}
                       </span>
                     </div>
+                    <span className="session-detail-col-reaction session-detail-value">
+                      {detail.reactionTime}ms
+                    </span>
+                    <span className="session-detail-col-percentile session-detail-value">
+                      {detail.percentile
+                        ? `상위 ${(detail.percentile * 100).toFixed(1)}%`
+                        : '-'}
+                    </span>
+                  </div>
                   );
                 })}
               </div>
