@@ -29,7 +29,7 @@ function encodeShareData(data: object): string {
   const bytes = encoder.encode(json);
   let binary = '';
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return btoa(binary);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 const PracticeSessionDetail: React.FC = () => {
