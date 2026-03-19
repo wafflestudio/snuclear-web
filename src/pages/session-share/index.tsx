@@ -17,7 +17,8 @@ interface ShareData {
 }
 
 function decodeShareData(encoded: string): ShareData {
-  const binary = atob(encoded);
+  const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
