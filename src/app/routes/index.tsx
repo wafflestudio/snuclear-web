@@ -13,6 +13,7 @@ import PracticeResults from '@pages/practice-results';
 import AdminPage from '@pages/admin';
 import NoticesPage from '@pages/notices';
 import NoticeDetailPage from '@pages/notices/NoticeDetailPage';
+import SessionSharePage from '@pages/session-share';
 
 export function AppRoutes() {
   return (
@@ -34,6 +35,7 @@ export function AppRoutes() {
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/notices" element={<NoticesPage />} />
       <Route path="/notices/:noticeId" element={<NoticeDetailPage />} />
+      <Route path="/session-share" element={<SessionSharePage />} />
     </Routes>
   );
 }
