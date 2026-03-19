@@ -193,7 +193,7 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ALLCLEAR 서비스 이용 방법 안내
+                SNUCLEAR 서비스 이용 방법 안내
               </a>
               <a
                 className={user ? 'rightFilledBtn' : 'rightOutlineBtn'}

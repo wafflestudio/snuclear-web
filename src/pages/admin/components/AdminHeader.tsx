@@ -18,7 +18,7 @@ export function AdminHeader({ onPasswordChange, onLogout }: AdminHeaderProps) {
             }}
           />
           <span className="admin-logo-text">
-            ALLCLEAR<span>Admin</span>
+            SNUCLEAR<span>Admin</span>
           </span>
         </Link>
 

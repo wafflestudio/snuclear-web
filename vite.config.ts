@@ -24,7 +24,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://allclear.codes/',
+        target: 'https://snuclear.com/',
         changeOrigin: true,
         secure: false,
       },

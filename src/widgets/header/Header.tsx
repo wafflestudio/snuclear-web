@@ -93,7 +93,7 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
             <div className="logoMark">
               <img
                 src="/assets/logo.png"
-                alt="ALLCLEAR"
+                alt="SNUCLEAR"
                 width={50}
                 height={50}
                 onError={(e) => {
@@ -104,7 +104,7 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
 
             <div className="logoTextArea">
               <div className="logoTitle">
-                <span className="logoBold">ALLCLEAR</span>
+                <span className="logoBold">SNUCLEAR</span>
                 <span className="logoTerm">2026-1학기</span>
               </div>
               <div className="logoSub">서울대학교 수강신청 연습 시스템</div>

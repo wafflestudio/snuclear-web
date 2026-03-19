@@ -1,8 +1,8 @@
-# AllClear
+# SNUClear
 
 서울대학교 수강신청 시스템을 모방한 시뮬레이션 플랫폼입니다. 실제와 유사한 환경에서 수강신청을 연습하고, 반응속도를 측정하여 랭킹에 도전할 수 있습니다.
 
-**배포:** https://allclear.codes/
+**배포:** https://snuclear.com/
 
 현재 레포는 front(web) 레포지토리이고 백엔드 레포는 https://github.com/wafflestudio/23-5-team8-server 에서 확인하실 수 있습니다.
 

@@ -30,7 +30,7 @@ export default function Footer({ onOpenModal }: FooterProps) {
             </a>
           </div>
           <div className="footerCopy">
-            Copyright (C) 2020 ALLCLEAR SERVICE. All Rights Reserved.
+            Copyright (C) 2020 SNUCLEAR SERVICE. All Rights Reserved.
           </div>
         </div>
 

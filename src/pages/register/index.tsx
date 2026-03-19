@@ -136,7 +136,7 @@ export default function Register() {
                 (e.currentTarget as HTMLImageElement).style.display = 'none';
               }}
             />
-            <span className="login-logo-text">ALLCLEAR</span>
+            <span className="login-logo-text">SNUCLEAR</span>
           </Link>
         </div>
       </header>

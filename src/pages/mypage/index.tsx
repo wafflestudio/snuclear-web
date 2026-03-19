@@ -22,7 +22,7 @@ const MyPageHeader: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
       <div className="mypage-header-content">
         <Link to="/" className="mypage-logo">
           <img src="/assets/logo.png" alt="All Clear Logo" />
-          <span className="mypage-logo-text">ALLCLEAR</span>
+          <span className="mypage-logo-text">SNUCLEAR</span>
         </Link>
         {onLogout && (
           <button className="logout-btn" onClick={onLogout}>
