@@ -24,7 +24,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://snuclear.com/',
+        target: 'https://snuclear-api.wafflestudio.com/',
         changeOrigin: true,
         secure: false,
       },
