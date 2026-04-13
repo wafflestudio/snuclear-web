@@ -10,7 +10,7 @@ React 19 + Vite + TypeScript, FSD(Feature-Sliced Design) 아키텍처.
 - **상태관리**: TanStack Query 5, Zustand 5
 - **스타일**: CSS Modules (컴포넌트별 `.css` 파일)
 - **HTTP**: Axios (Bearer 토큰, sessionStorage에 저장)
-- **API 베이스**: `https://allclear.codes/` (개발 시 vite proxy `/api` 사용)
+- **API 베이스**: `https://snuclear-server.wafflestudio.com/` (개발 시 vite proxy `/api` 사용)
 
 ## 디렉토리 구조 (FSD)
 
@@ -42,7 +42,7 @@ npm run typecheck    # 타입 체크
 npm run build        # 프로덕션 빌드
 ```
 
-> **핸드폰 테스트**: 백엔드가 특정 IP만 허용하므로 `allclear.codes` 프로덕션에서 테스트.
+> **핸드폰 테스트**: 백엔드가 특정 IP만 허용하므로 `snuclear.wafflestudio.com` 프로덕션에서 테스트.
 > 롤백 필요 시 GitHub PR 페이지의 Revert 버튼 사용.
 
 ## 인증
