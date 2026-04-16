@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { usePracticeSessionDetailQuery } from '@entities/user';
@@ -45,10 +45,9 @@ const PracticeSessionDetail: React.FC = () => {
     Number(sessionId)
   );
 
-  useEffect(() => {
-    if (!sessionDetail) return;
-
-    const compactData = {
+  const compactData = useMemo(() => {
+    if (!sessionDetail) return null;
+    return {
       d: sessionDetail.practiceAt,
       t: sessionDetail.totalAttempts,
       s: sessionDetail.successCount,
@@ -59,6 +58,10 @@ const PracticeSessionDetail: React.FC = () => {
         ok: a.isSuccess,
       })),
     };
+  }, [sessionDetail]);
+
+  useEffect(() => {
+    if (!compactData) return;
 
     const encoded = encodeShareData(compactData);
     const shareUrl = `${window.location.origin}/session-share?d=${encoded}`;
@@ -75,29 +78,16 @@ const PracticeSessionDetail: React.FC = () => {
     return () => {
       setQrDataUrl(null);
     };
-  }, [sessionDetail]);
+  }, [compactData]);
 
   const handleCopyImage = async () => {
-    if (!sessionDetail) return;
-
-    const compactData = {
-      d: sessionDetail.practiceAt,
-      t: sessionDetail.totalAttempts,
-      s: sessionDetail.successCount,
-      a: sessionDetail.attempts.map((a) => ({
-        c: a.courseTitle,
-        r: a.reactionTime,
-        p: a.percentile,
-        ok: a.isSuccess,
-      })),
-    };
+    if (!compactData) return;
 
     try {
       const dataUrl = drawSessionCard(compactData);
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
+      const blobPromise = fetch(dataUrl).then((r) => r.blob());
       await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob }),
+        new ClipboardItem({ 'image/png': blobPromise }),
       ]);
       setCopyStatus('copied');
       setTimeout(() => setCopyStatus('idle'), 2000);
@@ -146,8 +136,7 @@ const PracticeSessionDetail: React.FC = () => {
           <div className="results-header">
             <h2 className="results-title">연습 세션 상세 조회</h2>
             <div className="session-detail-header-right">
-              {sessionDetail && (
-                <div className="session-copy-box">
+              <div className="session-copy-box">
                   <button
                     className={`session-copy-btn ${copyStatus !== 'idle' ? copyStatus : ''}`}
                     onClick={handleCopyImage}
@@ -173,7 +162,6 @@ const PracticeSessionDetail: React.FC = () => {
                     {copyStatus === 'copied' ? '복사 완료!' : copyStatus === 'error' ? '복사 실패' : '사진 복사'}
                   </span>
                 </div>
-              )}
               {qrDataUrl && (
                 <div className="session-qr-box">
                   <img
