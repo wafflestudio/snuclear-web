@@ -9,7 +9,7 @@ React 19 + Vite + TypeScript, FSD(Feature-Sliced Design) 아키텍처.
 - **UI**: React 19, React Router DOM 7, Recharts
 - **상태관리**: TanStack Query 5, Zustand 5
 - **스타일**: CSS Modules (컴포넌트별 `.css` 파일)
-- **HTTP**: Axios (Bearer 토큰, sessionStorage에 저장)
+- **HTTP**: 네이티브 fetch 래퍼 (`src/shared/api/fetch.ts`, Bearer 토큰, sessionStorage에 저장)
 - **API 베이스**: `https://snuclear-server.wafflestudio.com/` (개발 시 vite proxy `/api` 사용)
 
 ## 디렉토리 구조 (FSD)
@@ -21,7 +21,7 @@ src/
 ├── widgets/      # 복합 UI 블록
 ├── features/     # 비즈니스 기능 단위
 ├── entities/     # 도메인 엔티티 (user 등)
-└── shared/       # 공통 유틸, axios 인스턴스 등
+└── shared/       # 공통 유틸, fetch API 래퍼 등
 ```
 
 ## 주요 경로
@@ -48,7 +48,7 @@ npm run build        # 프로덕션 빌드
 ## 인증
 
 - JWT Bearer 토큰을 `sessionStorage`에 저장 (`authToken` 키)
-- `src/shared/api/axios.ts`에서 요청 인터셉터로 자동 첨부
+- `src/shared/api/fetch.ts`에서 요청 시 자동 첨부
 - 토큰은 탭/브라우저 세션 단위로 유지 (창 닫으면 만료)
 
 ## QR 공유 기능 (session-share)
