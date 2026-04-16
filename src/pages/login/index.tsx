@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import {
   useAuth,
   loginApi,
@@ -108,10 +108,8 @@ export default function Login() {
         window.location.replace('/');
       }
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        const status = error.response.status;
-
-        switch (status) {
+      if (isApiError(error)) {
+        switch (error.status) {
           case 400:
             setError('email', { message: '올바른 이메일 형식이 아닙니다' });
             break;
@@ -126,7 +124,7 @@ export default function Login() {
             setError('root', {
               message: '로그인 중 알 수 없는 오류가 발생했습니다.',
             });
-            console.error('[Login] Login Failed:', error.response.data);
+            console.error('[Login] Login Failed:', error.data);
         }
       } else {
         console.error('[Login] Unexpected Error:', error);
@@ -174,9 +172,8 @@ export default function Login() {
           window.location.replace('/');
         }
       } catch (error) {
-        if (isAxiosError(error) && error.response) {
-          const status = error.response.status;
-          switch (status) {
+        if (isApiError(error)) {
+          switch (error.status) {
             case 400:
               setSocialErrorMessage('입력 값이 유효하지 않습니다.');
               break;
@@ -189,7 +186,7 @@ export default function Login() {
               );
               console.error(
                 '[Login] Social Login Failed:',
-                error.response.data
+                error.data
               );
           }
         } else {

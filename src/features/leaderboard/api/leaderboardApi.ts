@@ -1,4 +1,4 @@
-import {api} from '@shared/api/axios';
+import {api} from '@shared/api/fetch';
 import type {LeaderboardResponse, MyLeaderboardResponse, LeaderboardRequest} from '../model/types';
 
 export const getLeaderboardApi = async ({page, size}: LeaderboardRequest) => {
