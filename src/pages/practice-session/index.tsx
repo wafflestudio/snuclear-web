@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import QRCode from 'qrcode';
 import { usePracticeSessionDetailQuery } from '@entities/user';
 import type { PracticeAttemptResult } from '@entities/user';
+import { drawSessionCard } from '@shared/lib/sessionCardUtils';
 import '@pages/mypage/mypage.css';
 import '@pages/practice-results/practice-results.css';
 
@@ -38,6 +39,7 @@ const PracticeSessionDetail: React.FC = () => {
   const [searchParams] = useSearchParams();
   const fromHome = searchParams.get('from') === 'home';
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
 
   const { data: sessionDetail, isLoading } = usePracticeSessionDetailQuery(
     Number(sessionId)
@@ -74,6 +76,36 @@ const PracticeSessionDetail: React.FC = () => {
       setQrDataUrl(null);
     };
   }, [sessionDetail]);
+
+  const handleCopyImage = async () => {
+    if (!sessionDetail) return;
+
+    const compactData = {
+      d: sessionDetail.practiceAt,
+      t: sessionDetail.totalAttempts,
+      s: sessionDetail.successCount,
+      a: sessionDetail.attempts.map((a) => ({
+        c: a.courseTitle,
+        r: a.reactionTime,
+        p: a.percentile,
+        ok: a.isSuccess,
+      })),
+    };
+
+    try {
+      const dataUrl = drawSessionCard(compactData);
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      setCopyStatus('copied');
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    } catch {
+      setCopyStatus('error');
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -114,6 +146,34 @@ const PracticeSessionDetail: React.FC = () => {
           <div className="results-header">
             <h2 className="results-title">연습 세션 상세 조회</h2>
             <div className="session-detail-header-right">
+              {sessionDetail && (
+                <div className="session-copy-box">
+                  <button
+                    className={`session-copy-btn ${copyStatus !== 'idle' ? copyStatus : ''}`}
+                    onClick={handleCopyImage}
+                    aria-label="사진 클립보드에 복사"
+                  >
+                    {copyStatus === 'copied' ? (
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : copyStatus === 'error' ? (
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                  </button>
+                  <span className="session-qr-label">
+                    {copyStatus === 'copied' ? '복사 완료!' : copyStatus === 'error' ? '복사 실패' : '사진 복사'}
+                  </span>
+                </div>
+              )}
               {qrDataUrl && (
                 <div className="session-qr-box">
                   <img

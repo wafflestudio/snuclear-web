@@ -325,6 +325,45 @@
   font-weight: 500;
 }
 
+.session-copy-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.session-copy-btn {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.session-copy-btn:hover {
+  background: #f0f8ff;
+  border-color: #2491c9;
+  color: #2491c9;
+}
+
+.session-copy-btn.copied {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.session-copy-btn.error {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
 .view-more-btn {
   padding: 8px 20px;
   border-radius: 8px;
