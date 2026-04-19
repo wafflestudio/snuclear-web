@@ -8,7 +8,6 @@ const MAX_LOGIN_TIME = 10 * 60;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
-  const location = useLocation();
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = sessionStorage.getItem('userInfo');
     if (!storedUser) return null;
@@ -19,19 +18,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
   });
-
-  // 권한에 따른 페이지 접근 제어
-  useEffect(() => {
-    const isAdminPath = location.pathname.startsWith('/admin');
-
-    if (user?.admin && !isAdminPath) {
-      // 관리자가 일반 페이지 접근 시 어드민 페이지로 리다이렉트
-      window.location.replace('/admin');
-    } else if (!user?.admin && isAdminPath) {
-      // 비관리자가 어드민 페이지 접근 시 홈으로 리다이렉트
-      window.location.replace('/');
-    }
-  }, [user, location.pathname]);
 
   const login = (userData: User, accessToken: string) => {
     setUser(userData);

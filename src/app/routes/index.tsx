@@ -14,6 +14,7 @@ import AdminPage from '@pages/admin';
 import NoticesPage from '@pages/notices';
 import NoticeDetailPage from '@pages/notices/NoticeDetailPage';
 import SessionSharePage from '@pages/session-share';
+import { RequireAuth, RequireAdmin } from '@features/auth';
 
 export function AppRoutes() {
   return (
@@ -22,17 +23,63 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/search" element={<SearchPage />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/registration" element={<Registration />} />
-      <Route path="/enrollment-history" element={<EnrollmentHistory />} />
+      <Route
+        path="/cart"
+        element={
+          <RequireAuth>
+            <Cart />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/registration"
+        element={
+          <RequireAuth>
+            <Registration />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/enrollment-history"
+        element={
+          <RequireAuth>
+            <EnrollmentHistory />
+          </RequireAuth>
+        }
+      />
       <Route path="/leaderboard" element={<LeaderBoard />} />
-      <Route path="/mypage" element={<MyPage />} />
-      <Route path="/practice-results" element={<PracticeResults />} />
+      <Route
+        path="/mypage"
+        element={
+          <RequireAuth>
+            <MyPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/practice-results"
+        element={
+          <RequireAuth>
+            <PracticeResults />
+          </RequireAuth>
+        }
+      />
       <Route
         path="/practice-session/:sessionId"
-        element={<PracticeSessionDetail />}
+        element={
+          <RequireAuth>
+            <PracticeSessionDetail />
+          </RequireAuth>
+        }
       />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route
+        path="/admin"
+        element={
+          <RequireAdmin>
+            <AdminPage />
+          </RequireAdmin>
+        }
+      />
       <Route path="/notices" element={<NoticesPage />} />
       <Route path="/notices/:noticeId" element={<NoticeDetailPage />} />
       <Route path="/session-share" element={<SessionSharePage />} />

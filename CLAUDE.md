@@ -51,6 +51,14 @@ npm run build        # 프로덕션 빌드
 - `src/shared/api/fetch.ts`에서 요청 시 자동 첨부
 - 토큰은 탭/브라우저 세션 단위로 유지 (창 닫으면 만료)
 
+### 라우트 가드
+
+`src/features/auth/ui/` 의 컴포넌트로 라우트 레벨 보호. 비권한 시 `/`로 리다이렉트.
+- `<RequireAuth>` — 로그인 필요 (`/cart`, `/registration`, `/enrollment-history`, `/mypage`, `/practice-results`, `/practice-session/:id`)
+- `<RequireAdmin>` — 어드민 권한 필요 (`/admin`)
+
+어드민 유저도 일반 페이지 자유 접근 가능 (AuthProvider에서 강제 리다이렉트 제거됨).
+
 ## QR 공유 기능 (session-share)
 
 - `src/pages/practice-session/index.tsx`: 세션 데이터를 base64 인코딩 → QR 생성 (`qrcode` 라이브러리)
