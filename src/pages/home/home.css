@@ -180,14 +180,16 @@
     letter-spacing: -0.6px;
     white-space: pre-wrap;
   }
-  .periodTable tbody tr:first-child td {
+  .periodTable tbody tr.currentPeriod td {
     background-color: #eef5ff;
   }
   .periodTable td:first-child {
     text-align: left;
     padding-left: 18px;
   }
-  .periodTable td:nth-child(2) {
+  .periodTable td:nth-child(2),
+  .periodTable td:nth-child(3),
+  .periodTable td:nth-child(4) {
     text-align: center;
   }
   .periodTable th:last-child,
@@ -267,8 +269,8 @@
     display: inline-block;
   }
 
-  .periodTable tbody tr:first-child td {
-    background-color: transparent;
+  .periodTable tbody tr.currentPeriod td {
+    background-color: #eef5ff;
   }
 }
 

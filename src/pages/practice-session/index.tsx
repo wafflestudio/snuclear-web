@@ -13,8 +13,8 @@ const MyPageHeader: React.FC = () => {
     <header className="mypage-header">
       <div className="mypage-header-content">
         <Link to="/" className="mypage-logo">
-          <img src="/assets/logo.png" alt="All Clear Logo" />
-          <span className="mypage-logo-text">ALL CLEAR</span>
+          <img src="/assets/logo.png" alt="SnuClear Logo" />
+          <span className="mypage-logo-text">SNUCLEAR</span>
         </Link>
         <Link to="/mypage" className="mypage-back-btn">
           마이페이지

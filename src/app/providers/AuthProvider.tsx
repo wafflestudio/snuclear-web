@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext, TimerContext, type User, logoutApi, useAuth } from '@features/auth';
-import { setAuthToken, clearAuthToken } from '@shared/api/axios';
+import { setAuthToken, clearAuthToken } from '@shared/api/fetch';
 
 const MAX_LOGIN_TIME = 10 * 60;
 

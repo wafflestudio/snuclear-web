@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import {
   useCartQuery,
   useDeleteFromCartMutation,
@@ -61,8 +61,8 @@ export default function Cart() {
       setSelectedCourses(new Set());
     } catch (error) {
       console.error('[Cart] 장바구니 삭제 실패:', error);
-      if (isAxiosError(error) && error.response) {
-        alert(`삭제 실패: ${error.response.data.message || '알 수 없는 오류'}`);
+      if (isApiError(error)) {
+        alert(`삭제 실패: ${error.data.message || '알 수 없는 오류'}`);
       } else {
         alert('삭제 중 네트워크 오류가 발생했습니다.');
       }
@@ -82,8 +82,8 @@ export default function Cart() {
       });
     } catch (error) {
       console.error('[Cart] cartCount 수정 실패:', error);
-      if (isAxiosError(error) && error.response) {
-        alert(`수정 실패: ${error.response.data.message || '알 수 없는 오류'}`);
+      if (isApiError(error)) {
+        alert(`수정 실패: ${error.data.message || '알 수 없는 오류'}`);
       }
     }
   };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import { signupApi, loginApi, useAuth } from '@features/auth';
 import '@pages/login/login.css';
 
@@ -80,35 +80,35 @@ export default function Register() {
 
       navigate('/', { replace: true });
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        const status = error.response.status;
-        const responseData = error.response.data;
+      if (isApiError(error)) {
+        const responseData = error.data;
 
-        switch (status) {
+        switch (error.status) {
           case 409:
             setError('email', { message: '이미 사용 중인 이메일입니다.' });
             break;
 
           case 400:
             if (responseData.validationErrors) {
-              if (responseData.validationErrors.email) {
+              const validationErrors = responseData.validationErrors as Record<string, string>;
+              if (validationErrors.email) {
                 setError('email', {
-                  message: responseData.validationErrors.email,
+                  message: validationErrors.email,
                 });
               }
-              if (responseData.validationErrors.password) {
+              if (validationErrors.password) {
                 setError('password', {
-                  message: responseData.validationErrors.password,
+                  message: validationErrors.password,
                 });
               }
-              if (responseData.validationErrors.nickname) {
+              if (validationErrors.nickname) {
                 setError('name', {
-                  message: responseData.validationErrors.nickname,
+                  message: validationErrors.nickname,
                 });
               }
             } else {
               setGlobalError(
-                responseData.message || '입력 정보를 확인해주세요.'
+                (responseData.message as string) || '입력 정보를 확인해주세요.'
               );
             }
             break;
@@ -131,7 +131,7 @@ export default function Register() {
           <Link to="/" className="login-logo">
             <img
               src="/assets/logo.png"
-              alt="All Clear Logo"
+              alt="SnuClear Logo"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = 'none';
               }}

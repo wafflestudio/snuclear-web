@@ -21,7 +21,7 @@ export default function Footer({ onOpenModal }: FooterProps) {
         <div className="footerLeft">
           <div className="footerLinks">
             <a
-              href="https://boulder-argon-568.notion.site/AllClear-2f70bdb7bbc1801585bbda989f431714"
+              href="https://boulder-argon-568.notion.site/SnuClear-2f70bdb7bbc1801585bbda989f431714"
               target="_blank"
               rel="noopener noreferrer"
               className="footerLinkItem bold"

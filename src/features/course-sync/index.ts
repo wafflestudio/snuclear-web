@@ -13,6 +13,11 @@ export {
   useEnrollmentPeriodQuery,
   useUpdateEnrollmentPeriodMutation,
   enrollmentPeriodKeys,
+  useSugangPeriodQuery,
+  useSugangPeriodSyncStatusQuery,
+  useRunSugangPeriodSyncMutation,
+  useToggleSugangPeriodAutoSyncMutation,
+  sugangPeriodKeys,
 } from './model/useCourseSyncQuery';
 
 export type {
@@ -23,4 +28,9 @@ export type {
   EnrollmentPeriodType,
   EnrollmentPeriodResponse,
   EnrollmentPeriodUpdateRequest,
+  SugangPeriodDto,
+  SugangPeriodResponse,
+  SugangPeriodSyncRunResponse,
+  SugangPeriodSyncLastRun,
+  SugangPeriodSyncStatusResponse,
 } from './model/types';

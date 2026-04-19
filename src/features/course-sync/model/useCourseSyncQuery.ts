@@ -6,6 +6,11 @@ import {
   disableAutoSyncApi,
   getEnrollmentPeriodApi,
   updateEnrollmentPeriodApi,
+  getSugangPeriodApi,
+  runSugangPeriodSyncApi,
+  enableSugangPeriodAutoSyncApi,
+  disableSugangPeriodAutoSyncApi,
+  getSugangPeriodAutoSyncStatusApi,
 } from '../api/courseSyncApi';
 import type { CourseSyncRunRequest, EnrollmentPeriodUpdateRequest } from './types';
 
@@ -75,6 +80,63 @@ export function useUpdateEnrollmentPeriodMutation() {
     mutationFn: (data: EnrollmentPeriodUpdateRequest) => updateEnrollmentPeriodApi(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: enrollmentPeriodKeys.all });
+    },
+  });
+}
+
+// SugangPeriod (수강신청 기간 동기화) hooks
+export const sugangPeriodKeys = {
+  all: ['sugangPeriod'] as const,
+  data: () => [...sugangPeriodKeys.all, 'data'] as const,
+  syncStatus: () => [...sugangPeriodKeys.all, 'syncStatus'] as const,
+};
+
+export function useSugangPeriodQuery() {
+  return useQuery({
+    queryKey: sugangPeriodKeys.data(),
+    queryFn: async () => {
+      const response = await getSugangPeriodApi();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 30,
+  });
+}
+
+export function useSugangPeriodSyncStatusQuery() {
+  return useQuery({
+    queryKey: sugangPeriodKeys.syncStatus(),
+    queryFn: async () => {
+      const response = await getSugangPeriodAutoSyncStatusApi();
+      return response.data;
+    },
+    retry: false,
+  });
+}
+
+export function useRunSugangPeriodSyncMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => runSugangPeriodSyncApi(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sugangPeriodKeys.all });
+    },
+  });
+}
+
+export function useToggleSugangPeriodAutoSyncMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (enable: boolean) => {
+      if (enable) {
+        return await enableSugangPeriodAutoSyncApi();
+      } else {
+        return await disableSugangPeriodAutoSyncApi();
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sugangPeriodKeys.all });
     },
   });
 }

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import {
   useMyPageQuery,
   useUpdateProfileMutation,
@@ -21,7 +21,7 @@ const MyPageHeader: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
     <header className="mypage-header">
       <div className="mypage-header-content">
         <Link to="/" className="mypage-logo">
-          <img src="/assets/logo.png" alt="All Clear Logo" />
+          <img src="/assets/logo.png" alt="SnuClear Logo" />
           <span className="mypage-logo-text">SNUCLEAR</span>
         </Link>
         {onLogout && (
@@ -225,9 +225,9 @@ const MyPage: React.FC = () => {
         setSuccessMessage('프로필 이미지가 변경되었습니다.');
         setShowSuccessModal(true);
       } catch (error) {
-        if (isAxiosError(error)) {
+        if (isApiError(error)) {
           setErrorMessage(
-            error.response?.data?.message ||
+            (error.data?.message as string) ||
               '프로필 이미지 변경에 실패했습니다.'
           );
           setShowErrorModal(true);
@@ -244,7 +244,7 @@ const MyPage: React.FC = () => {
       setSuccessMessage('닉네임이 변경되었습니다.');
       setShowSuccessModal(true);
     } catch (error) {
-      if (isAxiosError(error)) {
+      if (isApiError(error)) {
         setShowNameModal(false);
         setErrorMessage('닉네임은 2자 이상 20자 이하여야 합니다.');
         setShowErrorModal(true);
@@ -273,9 +273,9 @@ const MyPage: React.FC = () => {
       setSuccessMessage('비밀번호가 변경되었습니다.');
       setShowSuccessModal(true);
     } catch (error) {
-      if (isAxiosError(error)) {
+      if (isApiError(error)) {
         setErrorMessage(
-          error.response?.data?.message || '비밀번호 변경에 실패했습니다.'
+          (error.data?.message as string) || '비밀번호 변경에 실패했습니다.'
         );
         setShowErrorModal(true);
       }
@@ -290,9 +290,9 @@ const MyPage: React.FC = () => {
       await logout();
       navigate('/');
     } catch (error) {
-      if (isAxiosError(error)) {
+      if (isApiError(error)) {
         setErrorMessage(
-          error.response?.data?.message || '계정 삭제에 실패했습니다.'
+          (error.data?.message as string) || '계정 삭제에 실패했습니다.'
         );
         setShowErrorModal(true);
       }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import {
   useCourseSearchQuery,
   SearchCourseItem,
@@ -119,13 +119,13 @@ export default function SearchPage() {
       openModal('search/cart');
     } catch (err) {
       console.error('[Search] 장바구니 추가 실패:', err);
-      if (isAxiosError(err) && err.response) {
-        if (err.response.status === 409) {
+      if (isApiError(err)) {
+        if (err.status === 409) {
           openModal('search/conflict');
           setSelectedCourses(new Set());
         } else {
           alert(
-            `장바구니 추가 실패: ${err.response.data.message || '알 수 없는 오류'}`
+            `장바구니 추가 실패: ${err.data.message || '알 수 없는 오류'}`
           );
         }
       } else {
