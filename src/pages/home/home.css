@@ -20,6 +20,13 @@
 }
 .periodPanel {
   order: 2;
+  background: transparent;
+  border-color: #c7d1de;
+  margin-bottom: 15px;
+  color: #333;
+  font-family: 'Noto Sans KR', Arial, Tahoma, sans-serif;
+  letter-spacing: -1px;
+  word-break: keep-all;
 }
 .rightButtons {
   order: 3;
@@ -93,16 +100,18 @@
   flex-wrap: wrap;
 }
 .periodTitle {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.6px;
+  line-height: 26px;
+  letter-spacing: -1px;
 }
 .periodYear {
   color: var(--blue);
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
   margin-right: 6px;
-  letter-spacing: -0.6px;
+  line-height: 26px;
+  letter-spacing: -1px;
 }
 .periodBody {
   padding: 0 16px 20px;
@@ -122,11 +131,13 @@
 
 /* Desktop table layout */
 @media (min-width: 769px) {
-  .panelHead {
-    padding: 30px 36px 18px;
+  .periodPanel > .panelHead {
+    padding: 32px 40px 0;
+    margin: 0;
   }
-  .periodBody {
-    padding: 0 40px 30px;
+  .periodPanel > .periodBody {
+    padding: 0 40px 32px;
+    margin-top: 23px;
   }
 
   .periodTable,
@@ -153,22 +164,24 @@
     width: 25%;
   }
   .periodTable th:nth-child(2) {
-    width: 41%;
+    width: 40%;
   }
   .periodTable th:nth-child(3) {
-    width: 18%;
+    width: 19%;
   }
   .periodTable th:nth-child(4) {
     width: 16%;
   }
   .periodTable th {
-    padding: 14px 18px;
+    padding: 10px 5px;
     border-bottom: 1px solid #e5e7eb;
     border-right: 1px solid #eef2f7;
     font-size: 16px;
     font-weight: 400;
     text-align: center;
     letter-spacing: -1px;
+    line-height: 24px;
+    vertical-align: baseline;
   }
   .periodTable td {
     padding: 10px 5px;
@@ -181,13 +194,14 @@
     line-height: 24px;
     white-space: pre-wrap;
     word-break: keep-all;
+    overflow-wrap: break-word;
   }
   .periodTable tbody tr.currentPeriod td {
     background-color: #eef5ff;
   }
   .periodTable td:first-child {
     text-align: left;
-    padding-left: 18px;
+    padding-left: 15px;
   }
   .periodTable td:nth-child(2),
   .periodTable td:nth-child(3),
@@ -234,6 +248,7 @@
     letter-spacing: -1px;
     line-height: 24px;
     word-break: keep-all;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
   }
 
