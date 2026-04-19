@@ -171,14 +171,16 @@
     letter-spacing: -1px;
   }
   .periodTable td {
-    padding: 12px 5px;
+    padding: 10px 5px;
     border-bottom: none;
     vertical-align: middle;
     border-right: 1px solid #eef2f7;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
-    letter-spacing: -0.6px;
+    letter-spacing: -1px;
+    line-height: 24px;
     white-space: pre-wrap;
+    word-break: keep-all;
   }
   .periodTable tbody tr.currentPeriod td {
     background-color: #eef5ff;
@@ -229,7 +231,9 @@
     padding: 0;
     font-size: 16px;
     font-weight: 400;
-    letter-spacing: -0.4px;
+    letter-spacing: -1px;
+    line-height: 24px;
+    word-break: keep-all;
     white-space: pre-wrap;
   }
 
