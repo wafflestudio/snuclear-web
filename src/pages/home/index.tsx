@@ -10,6 +10,7 @@ import {
 } from '@features/leaderboard';
 import { useAuth } from '@features/auth';
 import { useNoticesQuery } from '@features/notice';
+import { useSugangPeriodQuery } from '@features/course-sync';
 import { useMyPageQuery } from '@entities/user';
 import type {
   LeaderboardEntryResponse,
@@ -47,12 +48,43 @@ const formatNoticeDate = (dateString: string): string => {
   return `${month}.${day}`;
 };
 
+function parseHeaderParts(header: string) {
+  // "2026학년도 1학기 수강신청 기간안내 ※ 장바구니는 선착순이 아닙니다."
+  const noteMatch = header.match(/※.*/);
+  const note = noteMatch ? noteMatch[0] : '';
+  const withoutNote = header.replace(/\s*※.*/, '').trim();
+  // "2026학년도 1학기 수강신청 기간안내"
+  const periodTextMatch = withoutNote.match(/수강신청\s*기간안내/);
+  const periodText = periodTextMatch ? periodTextMatch[0] : '수강신청 기간안내';
+  const year = withoutNote.replace(/\s*수강신청\s*기간안내/, '').trim();
+  return { year, periodText, note };
+}
+
+function parseDateRange(dateStr: string): { start: string; end: string } | null {
+  // "2026-02-24(화) ~ 2026-02-24(화)" or "2026-03-10(화) ~ 2026-04-21(화)"
+  const matches = dateStr.match(/(\d{4}-\d{2}-\d{2})/g);
+  if (!matches || matches.length < 2) return null;
+  return { start: matches[0], end: matches[1] };
+}
+
+function isCurrentPeriod(dateStr: string): boolean {
+  const range = parseDateRange(dateStr);
+  if (!range) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return today >= range.start && today <= range.end;
+}
+
 export default function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterType>('all');
   const [category, setCategory] = useState<CategoryType>('firstReaction');
   const { data: myProfile } = useMyPageQuery();
+  const { data: sugangPeriod } = useSugangPeriodQuery();
+  const headerParts = useMemo(
+    () => sugangPeriod ? parseHeaderParts(sugangPeriod.header) : null,
+    [sugangPeriod],
+  );
 
   const { data: noticesData } = useNoticesQuery(0, 10);
 
@@ -137,37 +169,61 @@ export default function HomePage() {
         <div className="homeGrid">
           <div className="homeLeft">
             <section className="panel periodPanel">
-              <div className="panelHead">
-                <div className="periodTitle">
-                  <span className="periodYear blue">2026학년도 1학기</span>
-                  <span className="periodText">수강신청 기간안내</span>
+              {sugangPeriod ? (
+                <>
+                  <div className="panelHead">
+                    <div className="periodTitle">
+                      <span className="periodYear blue">
+                        {headerParts?.year}
+                      </span>
+                      <span className="periodText">
+                        {headerParts?.periodText}
+                      </span>
+                    </div>
+                    {headerParts?.note && (
+                      <div className="periodNote">
+                        {headerParts.note}
+                      </div>
+                    )}
+                  </div>
+                  <div className="periodBody">
+                    <table className="periodTable">
+                      <thead>
+                        <tr>
+                          <th>수강신청 구분</th>
+                          <th>일자</th>
+                          <th>시간</th>
+                          <th>대상</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sugangPeriod.body.map((row, index) => (
+                          <tr
+                            key={index}
+                            className={isCurrentPeriod(row.date) ? 'currentPeriod' : ''}
+                          >
+                            <td data-label="수강신청 구분">{row.category}</td>
+                            <td data-label="일자">{row.date}</td>
+                            <td data-label="시간">{row.time}</td>
+                            <td data-label="대상" className="periodTarget">
+                              {row.remark}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                <div className="panelHead">
+                  <div className="periodTitle">
+                    <span className="periodText">수강신청 기간안내</span>
+                  </div>
+                  <div className="periodNote" style={{ color: '#888' }}>
+                    기간 정보를 불러오는 중...
+                  </div>
                 </div>
-                <div className="periodNote">※장바구니는 선착순이 아닙니다.</div>
-              </div>
-              <div className="periodBody">
-                <table className="periodTable">
-                  <thead>
-                    <tr>
-                      <th>수강신청 구분</th>
-                      <th>일자</th>
-                      <th>시간</th>
-                      <th>대상</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SCHEDULE_DATA.map((row, index) => (
-                      <tr key={index}>
-                        <td data-label="수강신청 구분">{row.category}</td>
-                        <td data-label="일자">{row.date}</td>
-                        <td data-label="시간">{row.time}</td>
-                        <td data-label="대상" className="periodTarget">
-                          {row.target}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              )}
             </section>
           </div>
 
@@ -419,84 +475,3 @@ export default function HomePage() {
   );
 }
 
-const SCHEDULE_DATA = [
-  {
-    category: '신입생선착순수강신청\n(1일차)',
-    date: '2026-02-24(화) ~ 2026-02-24(화)',
-    time: '08:30 ~ 16:30',
-    target: '신·편입생\n(선착순수강1일)',
-  },
-  {
-    category: '신입생선착순수강신청\n(2일차)',
-    date: '2026-02-25(수) ~ 2026-02-25(수)',
-    time: '08:30 ~ 16:30',
-    target: '신·편입생\n(선착순수강2일)',
-  },
-  {
-    category: '수강신청변경(개강전)',
-    date: '2026-02-26(목) ~ 2026-02-26(목)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '수강신청변경(개강전)',
-    date: '2026-02-27(금) ~ 2026-02-27(금)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '수강신청변경',
-    date: '2026-03-03(화) ~ 2026-03-03(화)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '정원외신청(교원승인)',
-    date: '2026-03-03(화) ~ 2026-03-10(화)',
-    time: '08:30 ~ 23:59',
-    target: '교원승인:~3. 10.',
-  },
-  {
-    category: '정원외신청\n(학생수강확정)',
-    date: '2026-03-03(화) ~ 2026-03-11(수)',
-    time: '08:30 ~ 23:59',
-    target: '학생수강확정:~3.11.',
-  },
-  {
-    category: '정원외신청(학생신청)',
-    date: '2026-03-03(화) ~ 2026-03-09(월)',
-    time: '08:30 ~ 23:59',
-    target: '학생 신청: ~3. 9.',
-  },
-  {
-    category: '수강신청변경',
-    date: '2026-03-04(수) ~ 2026-03-04(수)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '수강신청변경',
-    date: '2026-03-05(목) ~ 2026-03-05(목)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '수강신청변경',
-    date: '2026-03-06(금) ~ 2026-03-06(금)',
-    time: '09:00 ~ 18:30',
-    target: '전체 학생',
-  },
-  {
-    category: '수강신청변경',
-    date: '2026-03-09(월) ~ 2026-03-09(월)',
-    time: '09:00 ~ 23:59',
-    target: '전체 학생\n* 마지막날 한정으로 24시까지 운영',
-  },
-  {
-    category: '수강취소기간',
-    date: '2026-03-10(화) ~ 2026-04-21(화)',
-    time: '00:00 ~ 23:59',
-    target:
-      '마감:~4.21.(화)(메뉴: mySNU-학사정보-수업-정규학기수강취소)※ 4.1.(수) 18:00 ~ 4.2.(목) 10:00까지 일시중단 (고등교육통계조사 자료생성)',
-  },
-];

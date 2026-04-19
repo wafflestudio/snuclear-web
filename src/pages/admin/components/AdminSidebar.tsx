@@ -1,4 +1,4 @@
-export type AdminSection = 'notice' | 'sync' | 'metrics';
+export type AdminSection = 'notice' | 'sync' | 'sugang-period-sync' | 'metrics';
 
 interface AdminSidebarProps {
   activeSection: AdminSection;
@@ -23,6 +23,12 @@ export function AdminSidebar({
           onClick={() => onSectionChange('sync')}
         >
           강의 동기화
+        </li>
+        <li
+          className={`admin-sidebar-item ${activeSection === 'sugang-period-sync' ? 'active' : ''}`}
+          onClick={() => onSectionChange('sugang-period-sync')}
+        >
+          수강신청 기간 동기화
         </li>
         <li
           className={`admin-sidebar-item ${activeSection === 'metrics' ? 'active' : ''}`}

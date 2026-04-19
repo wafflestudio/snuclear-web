@@ -34,3 +34,35 @@ export interface EnrollmentPeriodResponse {
 export interface EnrollmentPeriodUpdateRequest {
   type: EnrollmentPeriodType;
 }
+
+// SugangPeriod (수강신청 기간 크롤링) types
+export interface SugangPeriodDto {
+  category: string;
+  date: string;
+  time: string;
+  remark: string;
+}
+
+export interface SugangPeriodResponse {
+  header: string;
+  body: SugangPeriodDto[];
+}
+
+export interface SugangPeriodSyncRunResponse {
+  accepted: boolean;
+  startedAt: string;
+}
+
+export interface SugangPeriodSyncLastRun {
+  status: 'SUCCESS' | 'FAILED';
+  startedAt: string;
+  finishedAt: string;
+  message: string | null;
+  hasDumpData: boolean;
+}
+
+export interface SugangPeriodSyncStatusResponse {
+  enabled: boolean;
+  updatedAt: string;
+  lastRun: SugangPeriodSyncLastRun | null;
+}

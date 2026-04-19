@@ -18,6 +18,7 @@ import { AdminHeader } from './components/AdminHeader';
 import { AdminSidebar, type AdminSection } from './components/AdminSidebar';
 import { NoticeSection } from './components/NoticeSection';
 import { SyncSection } from './components/SyncSection';
+import { SugangPeriodSyncSection } from './components/SugangPeriodSyncSection';
 import { MetricsSection } from './components/MetricsSection';
 import { PasswordChangeModal } from './components/PasswordChangeModal';
 import './admin.css';
@@ -119,6 +120,8 @@ export default function AdminPage() {
               onSyncNow={handleSyncNow}
             />
           )}
+
+          {activeSection === 'sugang-period-sync' && <SugangPeriodSyncSection />}
 
           {activeSection === 'metrics' && <MetricsSection />}
         </main>
