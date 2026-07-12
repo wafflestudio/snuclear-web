@@ -45,14 +45,15 @@ export function SortableCourseItem({
       ref={setNodeRef}
       style={style}
       className={`courseItem${isDragging ? ' dragging' : ''}`}
-    >
-      <div
-        className="courseCheckArea"
-        onClick={(e) => {
-          e.stopPropagation();
+      onClick={(event) => {
+        const infoArea =
+          event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
+        if (infoArea && event.clientX < infoArea.getBoundingClientRect().left) {
           onSelect();
-        }}
-      >
+        }
+      }}
+    >
+      <div className="courseCheckArea">
         <button
           type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}

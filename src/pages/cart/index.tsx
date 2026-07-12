@@ -154,18 +154,23 @@ export default function Cart() {
                     <div
                       key={item.preEnrollId}
                       className="courseItem"
+                      onClick={(event) => {
+                        const infoArea =
+                          event.currentTarget.querySelector<HTMLElement>(
+                            '.courseInfoArea'
+                          );
+                        if (
+                          infoArea &&
+                          event.clientX < infoArea.getBoundingClientRect().left
+                        ) {
+                          toggleCourseSelection(item.course.id);
+                        }
+                      }}
                     >
-                      <div
-                        className="courseCheckArea"
-                        onClick={() => toggleCourseSelection(item.course.id)}
-                      >
+                      <div className="courseCheckArea">
                         <button
                           type="button"
                           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCourseSelection(item.course.id);
-                          }}
                         >
                           <svg
                             className="checkIcon"

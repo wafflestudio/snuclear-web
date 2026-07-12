@@ -19,16 +19,22 @@ export function SearchCourseItem({
     () => formatSchedule(course.placeAndTime, '시간 미정'),
     [course.placeAndTime]
   );
+
   return (
-    <div className="courseItem">
-      <div className="courseCheckArea" onClick={onSelect}>
+    <div
+      className="courseItem"
+      onClick={(event) => {
+        const infoArea =
+          event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
+        if (infoArea && event.clientX < infoArea.getBoundingClientRect().left) {
+          onSelect();
+        }
+      }}
+    >
+      <div className="courseCheckArea">
         <button
           type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect();
-          }}
         >
           <svg
             className="checkIcon"

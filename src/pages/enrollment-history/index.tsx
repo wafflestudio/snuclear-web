@@ -109,18 +109,24 @@ export default function EnrollmentHistory() {
                         <div
                           key={course.id}
                           className="courseItem"
+                          onClick={(event) => {
+                            const infoArea =
+                              event.currentTarget.querySelector<HTMLElement>(
+                                '.courseInfoArea'
+                              );
+                            if (
+                              infoArea &&
+                              event.clientX <
+                                infoArea.getBoundingClientRect().left
+                            ) {
+                              toggleCourseSelection(course.id);
+                            }
+                          }}
                         >
-                          <div
-                            className="courseCheckArea"
-                            onClick={() => toggleCourseSelection(course.id)}
-                          >
+                          <div className="courseCheckArea">
                             <button
                               type="button"
                               className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCourseSelection(course.id);
-                              }}
                             >
                               <svg
                                 className="checkIcon"

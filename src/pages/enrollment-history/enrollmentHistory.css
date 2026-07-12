@@ -121,12 +121,22 @@
 }
 
 .courseCheckArea {
-  width: 82px;
-  flex-shrink: 0;
+  --course-check-hit-left: 18px;
+  --course-check-hit-right: 24px;
+  width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: var(--course-check-hit-left);
+  margin-right: var(--course-check-hit-right);
+  position: relative;
   cursor: pointer;
+}
+
+.courseCheckArea::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(-1 * var(--course-check-hit-right)) 0 calc(-1 * var(--course-check-hit-left));
 }
 
 .customCheckBtn {
@@ -140,6 +150,8 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+  position: relative;
+  z-index: 1;
   transition: border-color 0.2s;
 }
 
@@ -274,7 +286,8 @@
   }
 
   .courseCheckArea {
-    width: 60px;
+    --course-check-hit-left: 8px;
+    --course-check-hit-right: 12px;
   }
 
   .courseActionArea {
