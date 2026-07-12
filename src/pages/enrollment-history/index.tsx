@@ -74,12 +74,6 @@ export default function EnrollmentHistory() {
                 >
                   선택삭제
                 </button>
-                <button
-                  className="enrollment-tab-button"
-                  onClick={() => openNotSupported()}
-                >
-                  엑셀저장
-                </button>
                 <span className="enrollment-credit-info">
                   신청가능학점{' '}
                   <span className="enrollment-credit-number">21</span>
