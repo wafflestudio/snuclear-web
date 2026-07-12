@@ -20,7 +20,6 @@ export default function Cart() {
     showDeleteSuccess,
     openDeleteSuccess,
     closeDeleteSuccess,
-    openNotSupported,
     openModal,
     closeModal,
   } = useModalStore();
@@ -310,7 +309,7 @@ export default function Cart() {
         </div>
 
         <div className="cart-right-section">
-          <TimeTable title="장바구니 시간표" courses={coursesForTimeTable} onPrintClick={() => openNotSupported()} />
+          <TimeTable title="장바구니 시간표" courses={coursesForTimeTable} />
         </div>
         </div>
       </div>

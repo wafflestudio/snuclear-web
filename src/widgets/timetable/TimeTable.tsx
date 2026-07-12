@@ -113,14 +113,16 @@ export default function TimeTable({ title, courses, onPrintClick }: TimeTablePro
     <div className="timetable-container">
       <div className="timetable-header">
         <h2 className="timetable-title">{title}</h2>
-        <button className="timetable-print-btn" onClick={onPrintClick}>
-          시간표 인쇄{' '}
-          <img
-            src="/assets/btn_arrow_view_gray.png"
-            alt=""
-            className="cart-btn-arrow"
-          />
-        </button>
+        {onPrintClick && (
+          <button className="timetable-print-btn" onClick={onPrintClick}>
+            시간표 인쇄{' '}
+            <img
+              src="/assets/btn_arrow_view_gray.png"
+              alt=""
+              className="cart-btn-arrow"
+            />
+          </button>
+        )}
       </div>
 
       <div className="timetable-wrapper">
