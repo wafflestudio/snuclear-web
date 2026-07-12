@@ -139,7 +139,6 @@
   border-bottom: 1px solid #e0e0e0;
   background-color: #fff;
   transition: background-color 0.1s;
-  cursor: pointer;
 }
 
 .courseItem:hover {
@@ -154,6 +153,7 @@
   justify-content: center;
   margin-left: 18px;
   margin-right: 24px;
+  cursor: pointer;
 }
 
 .customCheckBtn {
@@ -178,7 +178,7 @@
   transition: stroke 0.2s ease-in-out;
 }
 
-.courseItem:hover .customCheckBtn {
+.courseCheckArea:hover .customCheckBtn {
   border-color: #3b87f5;
 }
 

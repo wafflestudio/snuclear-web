@@ -54,6 +54,7 @@ export function SortableCourseItem({
         }}
       >
         <button
+          type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
           aria-label={`${c.course.courseTitle} 선택`}
         >
