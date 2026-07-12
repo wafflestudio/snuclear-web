@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type MouseEvent } from 'react';
 import { useEnrolledCoursesQuery } from '@features/registration-practice';
 import { useCartQuery } from '@features/cart-management';
 import { useModalStore } from '@shared/model/modalStore';
@@ -36,6 +36,11 @@ export default function EnrollmentHistory() {
 
   const toggleCourseSelection = (courseId: number) => {
     setSelectedCourseId((prev) => (prev === courseId ? null : courseId));
+  };
+
+  const isLeftCourseCellClick = (event: MouseEvent<HTMLDivElement>) => {
+    const infoArea = event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
+    return !!infoArea && event.clientX < infoArea.getBoundingClientRect().left;
   };
 
   const totalCredit = enrolledCourses.reduce(
@@ -109,18 +114,16 @@ export default function EnrollmentHistory() {
                         <div
                           key={course.id}
                           className="courseItem"
+                          onClick={(event) => {
+                            if (isLeftCourseCellClick(event)) {
+                              toggleCourseSelection(course.id);
+                            }
+                          }}
                         >
-                          <div
-                            className="courseCheckArea"
-                            onClick={() => toggleCourseSelection(course.id)}
-                          >
+                          <div className="courseCheckArea">
                             <button
                               type="button"
                               className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCourseSelection(course.id);
-                              }}
                             >
                               <svg
                                 className="checkIcon"

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type MouseEvent } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { formatSchedule } from '@shared/lib/timeUtils';
@@ -40,19 +40,21 @@ export function SortableCourseItem({
     [c.course.placeAndTime]
   );
 
+  const handleCourseItemClick = (event: MouseEvent<HTMLDivElement>) => {
+    const infoArea = event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
+    if (infoArea && event.clientX < infoArea.getBoundingClientRect().left) {
+      onSelect();
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={`courseItem${isDragging ? ' dragging' : ''}`}
+      onClick={handleCourseItemClick}
     >
-      <div
-        className="courseCheckArea"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect();
-        }}
-      >
+      <div className="courseCheckArea">
         <button
           type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}

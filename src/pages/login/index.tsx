@@ -14,6 +14,8 @@ const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const SAVED_EMAIL_KEY = 'savedEmail';
+const DEV_LOGIN_EMAIL = 'dev@test.local';
+const DEV_LOGIN_PASSWORD = 'dev1234';
 
 interface LoginFormData {
   email: string;
@@ -57,6 +59,33 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     setSocialErrorMessage(null);
+
+    if (
+      import.meta.env.DEV &&
+      data.email === DEV_LOGIN_EMAIL &&
+      data.password === DEV_LOGIN_PASSWORD
+    ) {
+      login(
+        {
+          id: 'local-dev-user',
+          nickname: '로컬테스트',
+          email: DEV_LOGIN_EMAIL,
+          provider: 'local',
+          admin: false,
+        },
+        'local-dev-token'
+      );
+
+      if (data.rememberMe) {
+        localStorage.setItem(SAVED_EMAIL_KEY, data.email);
+      } else {
+        localStorage.removeItem(SAVED_EMAIL_KEY);
+      }
+
+      sessionStorage.setItem('freshLogin', 'true');
+      window.location.replace('/');
+      return;
+    }
 
     try {
       const response = await loginApi({

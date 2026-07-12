@@ -5,6 +5,7 @@ import {
   updateCartCountApi,
   deletePreEnrollApi,
 } from '../api/cartApi';
+import { getDevCartCourses } from '@shared/mock/devCourses';
 import type {
   PreEnrollAddRequest,
   PreEnrollCourseResponse,
@@ -22,6 +23,10 @@ export function useCartQuery(overQuotaOnly = false) {
   return useQuery({
     queryKey: cartKeys.list(overQuotaOnly),
     queryFn: async () => {
+      if (import.meta.env.DEV) {
+        return getDevCartCourses(overQuotaOnly);
+      }
+
       const response = await getPreEnrollsApi(overQuotaOnly);
       return response.data;
     },
@@ -32,7 +37,10 @@ export function useAddToCartMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: PreEnrollAddRequest) => addPreEnrollApi(data),
+    mutationFn: (data: PreEnrollAddRequest) => {
+      if (import.meta.env.DEV) return Promise.resolve();
+      return addPreEnrollApi(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: cartKeys.lists});
     },
@@ -49,7 +57,10 @@ export function useUpdateCartCountMutation() {
     }: {
       courseId: number;
       data: PreEnrollUpdateCartCountRequest;
-    }) => updateCartCountApi(courseId, data),
+    }) => {
+      if (import.meta.env.DEV) return Promise.resolve();
+      return updateCartCountApi(courseId, data);
+    },
     onMutate: async ({courseId, data}) => {
       await queryClient.cancelQueries({queryKey: cartKeys.lists});
 
@@ -84,7 +95,10 @@ export function useDeleteFromCartMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (courseId: number) => deletePreEnrollApi(courseId),
+    mutationFn: (courseId: number) => {
+      if (import.meta.env.DEV) return Promise.resolve();
+      return deletePreEnrollApi(courseId);
+    },
     onMutate: async (courseId) => {
       await queryClient.cancelQueries({queryKey: cartKeys.lists});
 
