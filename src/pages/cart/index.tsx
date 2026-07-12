@@ -124,22 +124,6 @@ export default function Cart() {
             >
               선택삭제
             </button>
-            <button className="cart-tab-button" onClick={() => openNotSupported()}>
-              관심강좌
-              <img
-                src="/assets/btn_arrow_view_gray.png"
-                alt=""
-                className="cart-btn-arrow"
-              />
-            </button>
-            <button className="cart-tab-button" onClick={() => openNotSupported()}>
-              전공이수내역조회
-              <img
-                src="/assets/btn_arrow_view_gray.png"
-                alt=""
-                className="cart-btn-arrow"
-              />
-            </button>
             <span className="cart-credit-info">
               신청가능학점 <span className="cart-credit-number">21</span>
               학점 / 담은 학점{' '}

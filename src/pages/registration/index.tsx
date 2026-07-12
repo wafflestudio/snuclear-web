@@ -33,7 +33,7 @@ import './registration.css';
 
 export default function Registration() {
   const { pipWindow, openWindow, closeWindow } = usePracticeWindow();
-  const { openNotSupported, openModal, closeModal } = useModalStore();
+  const { openModal, closeModal } = useModalStore();
   const isPracticeEndOpen = useModalStore((s) => s.openModals.has('registration/practiceEnd'));
 
   // Custom hooks
@@ -164,33 +164,6 @@ export default function Registration() {
 
         <div className="regTabs">
           <button className="regTabItem active">장바구니 보류강좌</button>
-          <button
-            className="regTabItem"
-            onClick={() => {
-              attempt.setWarningType('none');
-              openNotSupported();
-            }}
-          >
-            관심강좌
-          </button>
-          <button
-            className="regTabItem"
-            onClick={() => {
-              attempt.setWarningType('none');
-              openNotSupported();
-            }}
-          >
-            교과목검색
-          </button>
-          <button
-            className="regTabItem"
-            onClick={() => {
-              attempt.setWarningType('none');
-              openNotSupported();
-            }}
-          >
-            교과목번호 검색
-          </button>
           <p className="regTabInfoText">
             ※ 장바구니 탭에서 담은 수를 수정할 수 있습니다.
             <br />※ 마우스 드래그를 통해 강의 순서를 변경할 수 있습니다.
