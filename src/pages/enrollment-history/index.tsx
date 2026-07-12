@@ -109,10 +109,13 @@ export default function EnrollmentHistory() {
                         <div
                           key={course.id}
                           className="courseItem"
-                          onClick={() => toggleCourseSelection(course.id)}
                         >
-                          <div className="courseCheckArea">
+                          <div
+                            className="courseCheckArea"
+                            onClick={() => toggleCourseSelection(course.id)}
+                          >
                             <button
+                              type="button"
                               className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -189,7 +192,6 @@ export default function EnrollmentHistory() {
               <TimeTable
                 title="수강신청 시간표"
                 courses={coursesForTimeTable}
-                onPrintClick={() => openNotSupported()}
               />
             </div>
           </div>
