@@ -154,10 +154,13 @@ export default function Cart() {
                     <div
                       key={item.preEnrollId}
                       className="courseItem"
-                      onClick={() => toggleCourseSelection(item.course.id)}
                     >
-                      <div className="courseCheckArea">
+                      <div
+                        className="courseCheckArea"
+                        onClick={() => toggleCourseSelection(item.course.id)}
+                      >
                         <button
+                          type="button"
                           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
                           onClick={(e) => {
                             e.stopPropagation();
