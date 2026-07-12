@@ -147,12 +147,11 @@
 
 /* 1. 왼쪽 체크박스 영역 */
 .courseCheckArea {
-  width: 40px;
+  width: 82px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 18px;
-  margin-right: 24px;
   cursor: pointer;
 }
 
@@ -493,8 +492,7 @@
   }
 
   .courseCheckArea {
-    margin-left: 8px;
-    margin-right: 12px;
+    width: 60px;
   }
 
   .courseActionArea {
