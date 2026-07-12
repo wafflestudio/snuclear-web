@@ -233,12 +233,6 @@ export default function SearchPage() {
             <div className="legendItem">
               <span className="legendIcon">K</span> 거점국립대학 원격수업 강좌
             </div>
-            <button
-              className="excelBtn"
-              onClick={() => openModal('notSupported')}
-            >
-              엑셀저장
-            </button>
           </div>
         </div>
 
