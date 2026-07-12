@@ -1,4 +1,4 @@
-import { useState, useMemo, type MouseEvent } from 'react';
+import { useState, useMemo } from 'react';
 import { useEnrolledCoursesQuery } from '@features/registration-practice';
 import { useCartQuery } from '@features/cart-management';
 import { useModalStore } from '@shared/model/modalStore';
@@ -36,11 +36,6 @@ export default function EnrollmentHistory() {
 
   const toggleCourseSelection = (courseId: number) => {
     setSelectedCourseId((prev) => (prev === courseId ? null : courseId));
-  };
-
-  const isLeftCourseCellClick = (event: MouseEvent<HTMLDivElement>) => {
-    const infoArea = event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
-    return !!infoArea && event.clientX < infoArea.getBoundingClientRect().left;
   };
 
   const totalCredit = enrolledCourses.reduce(
@@ -115,7 +110,15 @@ export default function EnrollmentHistory() {
                           key={course.id}
                           className="courseItem"
                           onClick={(event) => {
-                            if (isLeftCourseCellClick(event)) {
+                            const infoArea =
+                              event.currentTarget.querySelector<HTMLElement>(
+                                '.courseInfoArea'
+                              );
+                            if (
+                              infoArea &&
+                              event.clientX <
+                                infoArea.getBoundingClientRect().left
+                            ) {
                               toggleCourseSelection(course.id);
                             }
                           }}

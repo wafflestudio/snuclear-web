@@ -1,4 +1,4 @@
-import { useState, useMemo, type MouseEvent } from 'react';
+import { useState, useMemo } from 'react';
 import { isAxiosError } from 'axios';
 import {
   useCartQuery,
@@ -43,11 +43,6 @@ export default function Cart() {
       }
       return newSet;
     });
-  };
-
-  const isLeftCourseCellClick = (event: MouseEvent<HTMLDivElement>) => {
-    const infoArea = event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
-    return !!infoArea && event.clientX < infoArea.getBoundingClientRect().left;
   };
 
   const handleDeleteSelected = async () => {
@@ -160,7 +155,14 @@ export default function Cart() {
                       key={item.preEnrollId}
                       className="courseItem"
                       onClick={(event) => {
-                        if (isLeftCourseCellClick(event)) {
+                        const infoArea =
+                          event.currentTarget.querySelector<HTMLElement>(
+                            '.courseInfoArea'
+                          );
+                        if (
+                          infoArea &&
+                          event.clientX < infoArea.getBoundingClientRect().left
+                        ) {
                           toggleCourseSelection(item.course.id);
                         }
                       }}

@@ -1,4 +1,4 @@
-import { useMemo, type MouseEvent } from 'react';
+import { useMemo } from 'react';
 import type { CourseDetailResponse } from '@entities/course';
 import { formatSchedule } from '@shared/lib/timeUtils';
 
@@ -20,15 +20,17 @@ export function SearchCourseItem({
     [course.placeAndTime]
   );
 
-  const handleCourseItemClick = (event: MouseEvent<HTMLDivElement>) => {
-    const infoArea = event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
-    if (infoArea && event.clientX < infoArea.getBoundingClientRect().left) {
-      onSelect();
-    }
-  };
-
   return (
-    <div className="courseItem" onClick={handleCourseItemClick}>
+    <div
+      className="courseItem"
+      onClick={(event) => {
+        const infoArea =
+          event.currentTarget.querySelector<HTMLElement>('.courseInfoArea');
+        if (infoArea && event.clientX < infoArea.getBoundingClientRect().left) {
+          onSelect();
+        }
+      }}
+    >
       <div className="courseCheckArea">
         <button
           type="button"
