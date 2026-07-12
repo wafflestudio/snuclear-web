@@ -20,9 +20,10 @@ export function SearchCourseItem({
     [course.placeAndTime]
   );
   return (
-    <div className="courseItem" onClick={onSelect}>
-      <div className="courseCheckArea">
+    <div className="courseItem">
+      <div className="courseCheckArea" onClick={onSelect}>
         <button
+          type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
