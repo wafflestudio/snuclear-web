@@ -27,11 +27,14 @@ import {
   type CourseData,
 } from '@features/registration-practice';
 import { useCartQuery } from '@features/cart-management';
+import { createTutorialPreEnroll, useTourStore } from '@features/tour';
 import { useModalStore } from '@shared/model/modalStore';
 import { WarningModal } from '@shared/ui/Warning';
 import './registration.css';
 
 export default function Registration() {
+  const tour = useTourStore();
+  const isTourActive = tour.isActive;
   const { pipWindow, openWindow, closeWindow } = usePracticeWindow();
   const { openModal, closeModal } = useModalStore();
   const isPracticeEndOpen = useModalStore((s) => s.openModals.has('registration/practiceEnd'));
@@ -128,7 +131,11 @@ export default function Registration() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pipWindow]);
 
-  const courseList = localCourseList.length > 0 ? localCourseList : null;
+  const courseList = isTourActive
+    ? [createTutorialPreEnroll(tour.cartCount)]
+    : localCourseList.length > 0
+      ? localCourseList
+      : null;
 
   // Drag and drop
   const sensors = useSensors(
@@ -155,6 +162,87 @@ export default function Registration() {
     }
   };
 
+  const handleTimerChange = (value: number) => {
+    timer.setStartOffset(value);
+    if (isTourActive && tour.currentStep === 'registrationTimer') {
+      tour.setStep('registrationStart');
+    }
+  };
+
+  const handlePracticeStartClick = () => {
+    handlePracticeToggle();
+
+    if (isTourActive && tour.currentStep === 'registrationStart') {
+      tour.setPracticeReady();
+      tour.setStep('registrationWaiting');
+    }
+  };
+
+  useEffect(() => {
+    if (!isTourActive || tour.currentStep !== 'registrationWaiting') return;
+    if (!tour.isPracticeReady) return;
+
+    const targetTime = new Date(timer.currentTime);
+    targetTime.setHours(8, 30, 0, 0);
+
+    if (timer.currentTime.getTime() >= targetTime.getTime()) {
+      tour.setStep('registrationCheck');
+    }
+  }, [
+    isTourActive,
+    timer.currentTime,
+    tour,
+    tour.currentStep,
+    tour.isPracticeReady,
+  ]);
+
+  const handleCourseSelect = (courseData: CourseData) => {
+    if (isTourActive) {
+      if (tour.currentStep === 'registrationCheck') {
+        tour.selectRegistrationCourse();
+        tour.setStep('registrationCaptcha');
+      }
+      return;
+    }
+
+    courseSelection.handleSelectCourse(
+      courseData.course.id,
+      0,
+      courseData.course.quota,
+      courseData.cartCount,
+      courseData.course.courseTitle,
+      courseData.course.courseNumber,
+      courseData.course.lectureNumber || ''
+    );
+  };
+
+  const handleCaptchaChange = (value: string) => {
+    if (isTourActive) {
+      tour.setCaptchaInput(value);
+      if (
+        tour.currentStep === 'registrationCaptcha' &&
+        value.replace(/\D/g, '').length > 0
+      ) {
+        tour.setStep('registrationSubmit');
+      }
+      return;
+    }
+
+    captcha.setCaptchaInput(value);
+  };
+
+  const handleSubmit = () => {
+    if (isTourActive) {
+      if (tour.currentStep === 'registrationSubmit') {
+        tour.markRegistrationSucceeded();
+        tour.setStep('registrationGoHistory');
+      }
+      return;
+    }
+
+    attempt.handleRegisterAttempt();
+  };
+
   return (
     <div className="registrationPage">
       <div className="containerX">
@@ -175,7 +263,7 @@ export default function Registration() {
           <div className="mobilePracticeControls">
             <button
               className={`mobilePracticeToggleBtn ${pipWindow ? 'active' : ''}`}
-              onClick={handlePracticeToggle}
+              onClick={handlePracticeStartClick}
               disabled={timer.isCooldown}
               style={{
                 cursor: timer.isCooldown ? 'not-allowed' : 'pointer',
@@ -191,7 +279,7 @@ export default function Registration() {
             <select
               className="mobilePracticeDropdown"
               value={timer.startOffset}
-              onChange={(e) => timer.setStartOffset(Number(e.target.value))}
+              onChange={(e) => handleTimerChange(Number(e.target.value))}
             >
               <option value={0} disabled hidden>연습 시작 설정</option>
               <option value={60}>60초 전</option>
@@ -234,18 +322,15 @@ export default function Registration() {
                         key={c.course.id}
                         courseData={c}
                         isSelected={
-                          courseSelection.selectedCourseId === c.course.id
+                          isTourActive
+                            ? tour.hasSelectedRegistrationCourse
+                            : courseSelection.selectedCourseId === c.course.id
                         }
-                        onSelect={() =>
-                          courseSelection.handleSelectCourse(
-                            c.course.id,
-                            0,
-                            c.course.quota,
-                            c.cartCount,
-                            c.course.courseTitle,
-                            c.course.courseNumber,
-                            c.course.lectureNumber || ''
-                          )
+                        onSelect={() => handleCourseSelect(c)}
+                        checkDataTourId={
+                          isTourActive
+                            ? 'registration-course-check'
+                            : undefined
                         }
                       />
                     ))}
@@ -279,15 +364,19 @@ export default function Registration() {
                     placeholder="입 력"
                     name="captchaInput"
                     autoComplete="off"
-                    value={captcha.captchaInput}
-                    onChange={(e) => captcha.setCaptchaInput(e.target.value)}
+                    value={
+                      isTourActive ? tour.captchaInput : captcha.captchaInput
+                    }
+                    onChange={(e) => handleCaptchaChange(e.target.value)}
+                    data-tour-id="registration-captcha-input"
                   />
                 </div>
               </div>
 
               <button
                 className="regSubmitBtn"
-                onClick={attempt.handleRegisterAttempt}
+                onClick={handleSubmit}
+                data-tour-id="registration-submit"
               >
                 수강신청
               </button>
@@ -296,9 +385,10 @@ export default function Registration() {
             <div className="practiceArea">
               <button
                 className={`practiceToggleBtn ${pipWindow ? 'active' : ''}`}
-                onClick={handlePracticeToggle}
+                onClick={handlePracticeStartClick}
                 disabled={timer.isCooldown}
                 aria-label="연습 시작 시간 설정"
+                data-tour-id="registration-start"
                 style={{
                   cursor: timer.isCooldown ? 'not-allowed' : 'pointer',
                   opacity: timer.isCooldown ? 0.6 : 1,
@@ -314,7 +404,8 @@ export default function Registration() {
               <select
                 className="timeSettingDropdown"
                 value={timer.startOffset}
-                onChange={(e) => timer.setStartOffset(Number(e.target.value))}
+                onChange={(e) => handleTimerChange(Number(e.target.value))}
+                data-tour-id="registration-timer"
               >
                 <option value={0} disabled hidden>
                   연습 시작 설정
@@ -356,14 +447,14 @@ export default function Registration() {
               placeholder="입 력"
               name="mobileCaptchaInput"
               autoComplete="off"
-              value={captcha.captchaInput}
-              onChange={(e) => captcha.setCaptchaInput(e.target.value)}
+              value={isTourActive ? tour.captchaInput : captcha.captchaInput}
+              onChange={(e) => handleCaptchaChange(e.target.value)}
             />
           </div>
         </div>
         <button
           className="regMobileSubmitBtn"
-          onClick={attempt.handleRegisterAttempt}
+          onClick={handleSubmit}
         >
           수강신청
         </button>

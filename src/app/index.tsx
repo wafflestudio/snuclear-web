@@ -5,6 +5,7 @@ import { Header } from '@widgets/header';
 import { Footer } from '@widgets/footer';
 import { SideMenu } from '@widgets/side-menu';
 import { WarningModal } from '@shared/ui/Warning';
+import { TourController } from '@features/tour';
 import { AppRoutes } from './routes';
 import './styles/global.css';
 
@@ -96,6 +97,7 @@ export default function App() {
           setShowLoginWarningOpen={setShowLoginWarningOpen}
         />
       )}
+      <TourController />
     </div>
   );
 }

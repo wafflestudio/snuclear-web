@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import {
@@ -12,6 +12,12 @@ import { useModalStore } from '@shared/model/modalStore';
 import { WarningModal } from '@shared/ui/Warning';
 import { Pagination } from '@shared/ui/Pagination';
 import {
+  TOUR_KEYWORD,
+  createTutorialPreEnroll,
+  tutorialCourse,
+  useTourStore,
+} from '@features/tour';
+import {
   hasTimeConflict,
   extractTimeFromPlaceAndTime,
 } from '@shared/lib/timeUtils';
@@ -22,8 +28,11 @@ const PAGE_SIZE = 10;
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const tour = useTourStore();
+  const isTourActive = tour.isActive;
 
   const keyword = searchParams.get('query') || '';
+  const isTourSearch = searchParams.get('tour') === '1' && keyword === TOUR_KEYWORD;
   const currentPage = parseInt(searchParams.get('page') || '0', 10);
 
   const captcha = useCaptcha();
@@ -53,12 +62,32 @@ export default function SearchPage() {
     page: currentPage,
     size: PAGE_SIZE,
   });
+  const isDisplayLoading = isTourActive ? false : isLoading;
+  const displayError = isTourActive ? null : error;
 
   const addToCartMutation = useAddToCartMutation();
 
-  const courses = data?.items ?? [];
-  const totalCount = data?.pageInfo.totalElements ?? 0;
-  const totalPages = data?.pageInfo.totalPages ?? 0;
+  const shouldUseTourMode = isTourActive || isTourSearch;
+  const courses = shouldUseTourMode ? [tutorialCourse] : data?.items ?? [];
+  const totalCount = shouldUseTourMode ? 1 : data?.pageInfo.totalElements ?? 0;
+  const totalPages = shouldUseTourMode ? 1 : data?.pageInfo.totalPages ?? 0;
+
+  useEffect(() => {
+    if (!isTourSearch) return;
+    if (tour.isManuallyStopped) return;
+    if (!tour.isActive) {
+      tour.startAtStep('searchCheck', tour.publishedAt);
+      return;
+    }
+    if (keyword !== TOUR_KEYWORD) return;
+    if (
+      tour.currentStep === 'searchIntro' ||
+      tour.currentStep === 'searchType' ||
+      tour.currentStep === null
+    ) {
+      tour.setStep('searchCheck');
+    }
+  }, [isTourSearch, keyword, tour, tour.currentStep]);
 
   const setPage = (page: number) => {
     const newParams = new URLSearchParams(searchParams);
@@ -67,6 +96,12 @@ export default function SearchPage() {
   };
 
   const toggleCourseSelection = (courseId: number) => {
+    if (shouldUseTourMode && tour.currentStep === 'searchCheck') {
+      tour.selectSearchCourse();
+      tour.setStep('searchAddToCart');
+      return;
+    }
+
     setSelectedCourses((prev) => {
       if (prev.has(courseId)) {
         return new Set();
@@ -77,6 +112,14 @@ export default function SearchPage() {
   };
 
   const handleAddToCart = async () => {
+    if (shouldUseTourMode) {
+      if (tour.currentStep === 'searchAddToCart') {
+        tour.setStep('searchGoToCart');
+        openModal('search/cart');
+      }
+      return;
+    }
+
     if (selectedCourses.size === 0) {
       openModal('search/noCourseSelected');
       return;
@@ -141,12 +184,16 @@ export default function SearchPage() {
         onCancel={() => closeModal('search/cart')}
         onConfirm={() => {
           closeModal('search/cart');
+          if (shouldUseTourMode && tour.currentStep === 'searchGoToCart') {
+            tour.setStep('cartCount');
+          }
           navigate('/cart');
         }}
         title="장바구니에 담겼습니다."
         subtitle="지금 바로 장바구니로 이동하시겠습니까?"
         cancelLabel="아니요, 괜찮습니다."
         confirmLabel="장바구니로 이동"
+        confirmButtonDataTourId="search-go-cart"
       />
 
       <WarningModal.Alert
@@ -195,7 +242,9 @@ export default function SearchPage() {
             <span className="quote">'{keyword}'</span> 검색 결과
           </h2>
           <p className="searchCount">
-            <span className="countNum">{isLoading ? '...' : totalCount}</span>
+            <span className="countNum">
+              {isDisplayLoading ? '...' : totalCount}
+            </span>
             건의 교과목이 검색되었습니다.
           </p>
         </div>
@@ -240,21 +289,35 @@ export default function SearchPage() {
           <div className="searchLeftColumn">
             <hr className="blackLine" />
             <div className="resultListArea">
-              {isLoading && <p className="stateMessage">검색 중...</p>}
-              {error && (
+              {isDisplayLoading && <p className="stateMessage">검색 중...</p>}
+              {displayError && (
                 <p className="stateMessage error">강의 검색에 실패했습니다.</p>
               )}
-              {!isLoading && !error && courses.length === 0 && keyword && (
-                <p className="stateMessage">검색 결과가 없습니다.</p>
-              )}
-              {!isLoading &&
+              {!isDisplayLoading &&
+                !displayError &&
+                courses.length === 0 &&
+                keyword && (
+                  <p className="stateMessage">검색 결과가 없습니다.</p>
+                )}
+              {!isDisplayLoading &&
                 courses.map((course: CourseDetailResponse) => (
                   <SearchCourseItem
                     key={course.id}
                     course={course}
-                    isSelected={selectedCourses.has(course.id)}
-                    cartCount={0}
+                    isSelected={
+                      shouldUseTourMode
+                        ? tour.hasSelectedSearchCourse
+                        : selectedCourses.has(course.id)
+                    }
+                    cartCount={
+                      shouldUseTourMode
+                        ? createTutorialPreEnroll(tour.cartCount).cartCount
+                        : 0
+                    }
                     onSelect={() => toggleCourseSelection(course.id)}
+                    checkDataTourId={
+                      shouldUseTourMode ? 'search-course-check' : undefined
+                    }
                   />
                 ))}
             </div>
@@ -269,7 +332,7 @@ export default function SearchPage() {
               </p>
             </div>
 
-            {!isLoading && !error && (
+            {!isDisplayLoading && !displayError && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -289,6 +352,7 @@ export default function SearchPage() {
               <button
                 className="floatBtn fillBlueBtn"
                 onClick={handleAddToCart}
+                data-tour-id="search-add-cart"
               >
                 장바구니 담기
               </button>
