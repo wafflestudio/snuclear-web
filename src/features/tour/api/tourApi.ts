@@ -1,4 +1,4 @@
-import { api } from '@shared/api/axios';
+import { api } from '@shared/api/fetch';
 import type { TourCompletionRequest, TourStatusResponse } from '../model/types';
 
 export const getTourStatusApi = async () => {

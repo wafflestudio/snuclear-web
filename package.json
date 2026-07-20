@@ -20,7 +20,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-query": "^5.90.19",
     "@tanstack/react-virtual": "^3.13.18",
-    "axios": "^1.13.2",
     "qrcode": "^1.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

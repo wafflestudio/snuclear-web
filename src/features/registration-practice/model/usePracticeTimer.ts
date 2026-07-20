@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 
 import { practiceStartApi, practiceEndApi } from '../api/registrationApi';
 import { enrolledCoursesKeys } from './useEnrolledCoursesQuery';
@@ -97,9 +97,9 @@ export function usePracticeTimer({
         onPracticeEnd();
       }
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isApiError(error)) {
         alert(
-          `연습 종료 실패: ${error.response.data.message || '알 수 없는 오류'}`
+          `연습 종료 실패: ${error.data.message || '알 수 없는 오류'}`
         );
       } else {
         alert('연습 종료 중 네트워크 오류가 발생했습니다.');
@@ -124,8 +124,8 @@ export function usePracticeTimer({
     try {
       await startPracticeWithOffset();
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        if (error.response.status === 409) {
+      if (isApiError(error)) {
+        if (error.status === 409) {
           try {
             await practiceEndApi();
             await startPracticeWithOffset();
@@ -134,7 +134,7 @@ export function usePracticeTimer({
           }
         } else {
           alert(
-            `연습 시작 실패: ${error.response.data.message || '알 수 없는 오류'}`
+            `연습 시작 실패: ${error.data.message || '알 수 없는 오류'}`
           );
         }
       } else {

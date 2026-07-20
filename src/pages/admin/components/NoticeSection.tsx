@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 import { WarningModal } from '@shared/ui/Warning';
 import { Pagination } from '@shared/ui/Pagination';
 import type {
@@ -131,12 +131,12 @@ export function NoticeSection({
       setShowSuccessAlert(true);
     } catch (error) {
       console.error('[NoticeSection] Form submit error:', error);
-      if (isAxiosError(error) && error.response) {
-        const data = error.response.data;
+      if (isApiError(error)) {
+        const data = error.data;
         console.error('[NoticeSection] Full server response:', JSON.stringify(data, null, 2));
-        let message = data?.message || data?.error || '알 수 없는 오류';
+        let message = (data?.message as string) || (data?.error as string) || '알 수 없는 오류';
         if (data?.fieldErrors) {
-          const fieldMessages = Object.entries(data.fieldErrors)
+          const fieldMessages = Object.entries(data.fieldErrors as Record<string, string>)
             .map(([field, msg]) => `${field}: ${msg}`)
             .join(', ');
           message += ` (${fieldMessages})`;

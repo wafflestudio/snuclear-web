@@ -1,15 +1,16 @@
-name: CI/CD Team8 React App
+name: CI/CD SnuClear Web
 
 on:
   push:
     branches:
       - main
+      - dev
   pull_request:
     branches:
       - main
+      - dev
 
 jobs:
-  # 1. CI 작업 (검사 및 빌드 테스트)
   ci:
     runs-on: ubuntu-latest
     steps:
@@ -25,16 +26,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # [중요] 코드 스타일 및 에러 검사
-      # package.json에 "lint" 명령어가 있어야 합니다.
       - name: Lint Code
         run: npm run lint
 
-      # (선택사항) 유닛 테스트가 있다면 주석을 풀고 사용하세요
-      # - name: Run Tests
-      #   run: npm run test
-
-      # 빌드가 정상적으로 되는지 미리 확인 (Type Check 포함)
       - name: Build Test
         run: npm run build
         env:
@@ -42,11 +36,11 @@ jobs:
           VITE_KAKAO_REST_API_KEY: ${{ secrets.VITE_KAKAO_REST_API_KEY }}
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
-  # 2. CD 작업 (배포) - CI가 성공해야만 실행됨
   deploy:
-    needs: ci # <--- [핵심] ci 작업이 성공해야만 deploy가 실행됩니다.
+    needs: ci
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' # PR일 땐 배포하지 않고, Push일 때만 배포
+    if: github.event_name == 'push'
+    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
 
     steps:
       - name: Checkout source code

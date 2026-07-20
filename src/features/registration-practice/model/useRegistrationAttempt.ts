@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { isAxiosError } from 'axios';
+import { isApiError } from '@shared/api/fetch';
 
 import { practiceAttemptApi } from '../api/registrationApi';
 import { calculateQueueInfo } from '../lib/registrationUtils';
@@ -133,8 +133,8 @@ export function useRegistrationAttempt({
         queryClient.invalidateQueries({ queryKey: enrolledCoursesKeys.all });
       }
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
-        alert(error.response.data.message || '수강신청에 실패했습니다.');
+      if (isApiError(error)) {
+        alert(error.data.message || '수강신청에 실패했습니다.');
       } else {
         alert('수강신청 요청 중 오류가 발생했습니다.');
       }

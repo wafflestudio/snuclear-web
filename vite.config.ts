@@ -6,7 +6,7 @@ import path from 'path';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiProxyTarget =
-    env.VITE_API_PROXY_TARGET || 'https://snuclear.wafflestudio.com';
+    env.VITE_API_PROXY_TARGET || 'https://snuclear-server.wafflestudio.com/';
 
   return {
     plugins: [
