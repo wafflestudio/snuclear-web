@@ -1,0 +1,287 @@
+.snuttOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.snuttModal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.snuttHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.snuttTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #222;
+}
+
+.snuttCloseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.snuttCloseBtn:hover {
+  color: #333;
+}
+
+.snuttCloseBtn svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+}
+
+.snuttBody {
+  flex: 1;
+  padding: 18px 22px;
+  overflow-y: auto;
+}
+
+.snuttCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+}
+
+.snuttCenterText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  text-align: center;
+}
+
+.snuttError {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: #fdeceb;
+  color: #c0392b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.snuttWarn {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: #fff8e6;
+  color: #a06a00;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.snuttMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.snuttMetaTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.snuttMetaTerm {
+  font-size: 13px;
+  color: #888;
+}
+
+.snuttSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 8px;
+}
+
+.snuttSectionHead:first-of-type {
+  margin-top: 0;
+}
+
+.snuttSectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.snuttSectionTitle.muted {
+  color: #999;
+}
+
+.snuttSelectAllBtn {
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  color: #5189d6;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.snuttSelectAllBtn:hover {
+  text-decoration: underline;
+}
+
+.snuttList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.snuttItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.snuttItem:hover {
+  background-color: #f5f8fd;
+}
+
+.snuttItem.plain {
+  cursor: default;
+}
+
+.snuttItem.plain:hover {
+  background-color: transparent;
+}
+
+.snuttItem input[type='checkbox'] {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #0f3c8e;
+  cursor: pointer;
+}
+
+.snuttItemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.snuttItemTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+.snuttItemSub {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #888;
+  word-break: keep-all;
+}
+
+.snuttList.muted .snuttItemTitle {
+  color: #999;
+  text-decoration: line-through;
+}
+
+.snuttFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid #eee;
+}
+
+.snuttPrimaryBtn,
+.snuttGhostBtn {
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    opacity 0.15s;
+}
+
+.snuttPrimaryBtn {
+  border: none;
+  background-color: #0f3c8e;
+  color: #fff;
+}
+
+.snuttPrimaryBtn:hover:not(:disabled) {
+  background-color: #0c3175;
+}
+
+.snuttPrimaryBtn:disabled {
+  background-color: #b9c4d6;
+  cursor: default;
+}
+
+.snuttGhostBtn {
+  border: 1px solid #d5d5d5;
+  background-color: #fff;
+  color: #555;
+}
+
+.snuttGhostBtn:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
+.snuttGhostBtn:disabled {
+  color: #aaa;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .snuttModal {
+    max-height: 88vh;
+  }
+
+  .snuttBody {
+    padding: 16px 18px;
+  }
+
+  .snuttHead,
+  .snuttFoot {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
