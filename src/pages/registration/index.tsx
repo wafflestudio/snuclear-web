@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import {
   DndContext,
   closestCenter,
@@ -62,6 +63,7 @@ export default function Registration() {
   const [localCourseList, setLocalCourseList] = useState<CourseData[]>([]);
   const [isDraggingActive, setIsDraggingActive] = useState(false);
   const [isMobileWarningOpen, setMobileWarningOpen] = useState(false);
+  const [isGuideOpen, setGuideOpen] = useState(false);
 
   const handlePracticeToggle = () => {
     if (!pipWindow && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -213,9 +215,94 @@ export default function Registration() {
         <div className="regContent">
           <div className="regLeftColumn">
             <hr className="regDarkSeparator" />
-            {courseList?.length === 0 ? (
-              <div className="stateMessage">
-                장바구니에 남은 보류강좌가 없습니다.
+            {!courseList ? (
+              <div className="regEmptyState">
+                <svg
+                  className="regEmptyIcon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+
+                <p className="regEmptyTitle">
+                  담은 수가 정원을 초과한 강좌가 없습니다
+                </p>
+                <p className="regEmptyDesc">
+                  수강신청 연습을 하려면 먼저 장바구니에서 강좌를 담고,
+                  <br />
+                  담은 수를 정원 이상으로 설정해 주세요.
+                </p>
+
+                <Link to="/cart" className="regEmptyCta">
+                  장바구니로 가기
+                  <svg viewBox="0 0 10 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M1 1L8 8L1 15"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
+
+                <button
+                  type="button"
+                  className="regEmptyGuideToggle"
+                  aria-expanded={isGuideOpen}
+                  onClick={() => setGuideOpen((prev) => !prev)}
+                >
+                  연습 시작 방법 {isGuideOpen ? '접기' : '자세히 보기'}
+                  <svg
+                    className={`regEmptyGuideChevron${isGuideOpen ? ' open' : ''}`}
+                    viewBox="0 0 10 6"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M1 1.5L5 4.5L9 1.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+
+                {isGuideOpen && (
+                  <ol className="regEmptyGuideSteps">
+                    <li>
+                      <span className="regEmptyStepNum">1</span>
+                      <span className="regEmptyStepText">
+                        <strong>장바구니에 강좌 담기</strong>
+                        강좌 검색에서 연습할 강좌를 장바구니에 담습니다.
+                      </span>
+                    </li>
+                    <li>
+                      <span className="regEmptyStepNum">2</span>
+                      <span className="regEmptyStepText">
+                        <strong>담은 수를 정원 이상으로 설정</strong>
+                        담은 수가 정원을 초과한 강좌만 선착순 수강신청 대상이
+                        됩니다.
+                      </span>
+                    </li>
+                    <li>
+                      <span className="regEmptyStepNum">3</span>
+                      <span className="regEmptyStepText">
+                        <strong>이 페이지에서 연습 시작</strong>
+                        오른쪽 연습 모드 버튼으로 실전처럼 수강신청을 연습합니다.
+                      </span>
+                    </li>
+                  </ol>
+                )}
               </div>
             ) : (
               <DndContext
