@@ -97,17 +97,6 @@ export function SearchCourseItem({
             {cartCount}
           </span>
         </div>
-        <div className="arrowBox">
-          <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
-            <path
-              d="M1 1L8 8L1 15"
-              stroke="#aaa"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
       </div>
     </div>
   );
