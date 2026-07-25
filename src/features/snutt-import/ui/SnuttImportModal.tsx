@@ -272,8 +272,13 @@ export function SnuttImportModal({ onClose }: SnuttImportModalProps) {
                     </span>
                   </div>
                   <ul className="snuttList muted">
-                    {matchResult.unmatched.map(({ lecture, reason }) => (
-                      <li key={lecture._id}>
+                    {matchResult.unmatched.map(({ lecture, reason }, index) => (
+                      // SharedTimetable에는 강의 식별자(_id)가 없어 인덱스를 함께 쓴다
+                      <li
+                        key={`${lecture.course_number ?? lecture.course_title}-${
+                          lecture.lecture_number ?? index
+                        }`}
+                      >
                         <span className="snuttItem plain">
                           <span className="snuttItemBody">
                             <span className="snuttItemTitle">

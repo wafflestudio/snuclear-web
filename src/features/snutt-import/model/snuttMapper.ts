@@ -1,7 +1,7 @@
 import type { Semester } from '@entities/course';
 import {
   SNUTT_MESSAGE_TYPE,
-  type SnuttFullTimetable,
+  type SnuttSharedTimetable,
   type SnuttLecture,
   type SnuttSemester,
   type SnuttTimetableMessage,
@@ -38,7 +38,7 @@ export function formatSemester(year: number, semester: Semester): string {
 }
 
 /** 우리 서비스가 다루는 학기의 시간표인지 */
-export function isTargetSemester(timetable: SnuttFullTimetable): boolean {
+export function isTargetSemester(timetable: SnuttSharedTimetable): boolean {
   return (
     timetable.year === TARGET_YEAR &&
     toSemester(timetable.semester) === TARGET_SEMESTER

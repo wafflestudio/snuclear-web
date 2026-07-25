@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isSnuttTimetableMessage } from './snuttMapper';
-import type { SnuttFullTimetable } from './types';
+import type { SnuttSharedTimetable } from './types';
 
 const SNUTT_ORIGIN = import.meta.env.VITE_SNUTT_ORIGIN as string | undefined;
 
@@ -17,7 +17,7 @@ export type SnuttPickerStatus =
 
 export interface UseSnuttPickerResult {
   status: SnuttPickerStatus;
-  timetable: SnuttFullTimetable | null;
+  timetable: SnuttSharedTimetable | null;
   errorMessage: string | null;
   open: () => void;
   reset: () => void;
@@ -32,7 +32,7 @@ export interface UseSnuttPickerResult {
  */
 export function useSnuttPicker(): UseSnuttPickerResult {
   const [status, setStatus] = useState<SnuttPickerStatus>('idle');
-  const [timetable, setTimetable] = useState<SnuttFullTimetable | null>(null);
+  const [timetable, setTimetable] = useState<SnuttSharedTimetable | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const popupRef = useRef<Window | null>(null);

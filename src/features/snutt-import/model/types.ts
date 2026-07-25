@@ -2,8 +2,16 @@ import type { CourseDetailResponse, Semester } from '@entities/course';
 
 /**
  * SNUTT 시간표 피커에서 postMessage로 전달받는 페이로드 타입.
+ *
  * 원본 정의: wafflestudio/snutt-frontend
- *   apps/snutt-webclient/src/entities/{timetable,lecture,time}.ts
+ *   apps/snutt-webclient/src/usecases/timetablePickerService.ts (SharedTimetable)
+ *
+ * 주의: 전달되는 값은 FullTimetable 원본이 아니라, SNUTT가 내부 식별자와
+ * 색상/테마 정보를 제거한 SharedTimetable 이다.
+ *   - 시간표에서 제거: _id, user_id, updated_at, theme
+ *   - 강의에서 제거:   _id, color, colorIndex
+ * 따라서 강의를 식별할 안정적인 키가 없어, 목록 렌더링 시에는
+ * course_number + lecture_number 조합이나 인덱스를 사용해야 한다.
  *
  * course_number / lecture_number 는 SNU 원본 값이라 우리 DB와 직접 매칭된다.
  * 다만 SNUTT에서 사용자가 직접 만든 커스텀 강의는 두 값이 모두 없다.
@@ -26,7 +34,6 @@ export interface SnuttClassTime {
 }
 
 export interface SnuttLecture {
-  _id: string;
   course_title: string;
   course_number?: string;
   lecture_number?: string;
@@ -43,20 +50,16 @@ export interface SnuttLecture {
   class_time_mask?: number[];
 }
 
-export interface SnuttFullTimetable {
-  _id: string;
-  user_id: string;
+export interface SnuttSharedTimetable {
   title: string;
   year: number;
   semester: SnuttSemester;
-  theme?: number;
-  updated_at?: string;
   lecture_list: SnuttLecture[];
 }
 
 export interface SnuttTimetableMessage {
   type: typeof SNUTT_MESSAGE_TYPE;
-  payload: SnuttFullTimetable;
+  payload: SnuttSharedTimetable;
 }
 
 /** 우리 DB와 매칭할 수 없는 사유 */

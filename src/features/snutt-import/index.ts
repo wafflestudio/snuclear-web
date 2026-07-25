@@ -18,7 +18,7 @@ export {
 export type { SnuttImportButtonProps } from './ui/SnuttImportButton';
 export type { SnuttImportModalProps } from './ui/SnuttImportModal';
 export type {
-  SnuttFullTimetable,
+  SnuttSharedTimetable,
   SnuttLecture,
   SnuttClassTime,
   SnuttMatchResult,
