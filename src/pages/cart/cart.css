@@ -131,8 +131,82 @@
 }
 
 .cart-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
   text-align: center;
   padding: 30px 20px 30px;
+}
+
+/* SNUTT 불러오기 — 목록 상단 버튼줄 */
+.snuttImportCompactBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 6px 13px;
+  background: #fff;
+  border: 1px solid #c3d3ea;
+  border-radius: 16px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.snuttImportCompactBtn:hover {
+  background: #f2f6fc;
+  border-color: #9db8e0;
+}
+
+.snuttImportCompactBtn svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+}
+
+/* SNUTT 불러오기 — 빈 상태 강조 버튼 */
+.snuttImportCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 20px;
+  height: 42px;
+  background-color: var(--blue);
+  border: none;
+  border-radius: 21px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  letter-spacing: -0.2px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(55, 109, 200, 0.24);
+  transition:
+    background-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
+}
+
+.snuttImportCtaBtn:hover {
+  background-color: #2f60b4;
+  box-shadow: 0 4px 12px rgba(55, 109, 200, 0.3);
+}
+
+.snuttImportCtaBtn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 5px rgba(55, 109, 200, 0.24);
+}
+
+.snuttImportCtaBtn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
 }
 
 .cart-empty-title {
@@ -171,32 +245,70 @@
   border-color: #3b87f5;
 }
 
-.cartCountDisplay {
+.cartCountControl {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 24px;
-  color: #5189d6;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin-right: -20px;
-  transition: background-color 0.15s;
+  gap: 6px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #ccc;
+  transition: border-color 0.15s;
 }
 
-.cartCountDisplay:hover {
-  background-color: #f0f0f0;
+.cartCountControl:focus-within {
+  border-bottom-color: #5189d6;
+}
+
+.cartCountStepper {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cartCountStepBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: #9a9a9a;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    transform 0.1s;
+}
+
+.cartCountStepBtn:hover:not(:disabled) {
+  color: #5189d6;
+}
+
+.cartCountStepBtn:active:not(:disabled) {
+  transform: scale(0.85);
+}
+
+.cartCountStepBtn:disabled {
+  color: #dcdcdc;
+  cursor: default;
+}
+
+.cartCountStepBtn svg {
+  width: 9px;
+  height: 5.5px;
+  fill: none;
+  overflow: visible;
 }
 
 .cartCountInput {
-  width: 40px;
-  height: 24px;
+  width: 42px;
   text-align: center;
   font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-right: -20px;
+  font-family: inherit;
+  color: #333;
+  background: transparent;
+  border: none;
   appearance: none;
   -moz-appearance: textfield;
 }
@@ -209,7 +321,6 @@
 
 .cartCountInput:focus {
   outline: none;
-  border-color: #5189d6;
 }
 
 .courseInfoArea {

@@ -5,6 +5,7 @@ import {
   useDeleteFromCartMutation,
   useUpdateCartCountMutation,
 } from '@features/cart-management';
+import { SnuttImportButton, SnuttImportModal } from '@features/snutt-import';
 import { useModalStore } from '@shared/model/modalStore';
 import { WarningModal } from '@shared/ui/Warning';
 import { TimeTable } from '@widgets/timetable';
@@ -42,8 +43,23 @@ export default function Cart() {
   const [selectedCourses, setSelectedCourses] = useState<Set<number>>(
     new Set()
   );
-  const [editingCourseId, setEditingCourseId] = useState<number | null>(null);
-  const [editingValue, setEditingValue] = useState<string>('');
+  const [draftCounts, setDraftCounts] = useState<Record<number, string>>({});
+  const [isSnuttImportOpen, setSnuttImportOpen] = useState(false);
+
+  const getDraftCount = (courseId: number, cartCount: number) =>
+    draftCounts[courseId] ?? String(cartCount);
+
+  const setDraftCount = (courseId: number, value: string) => {
+    setDraftCounts((prev) => ({ ...prev, [courseId]: value }));
+  };
+
+  const clearDraftCount = (courseId: number) => {
+    setDraftCounts((prev) => {
+      const next = { ...prev };
+      delete next[courseId];
+      return next;
+    });
+  };
 
   const toggleCourseSelection = (courseId: number) => {
     setSelectedCourses((prev) => {
@@ -83,7 +99,9 @@ export default function Cart() {
   const handleCartCountChange = async (courseId: number, newValue: string) => {
     if (isTourActive) {
       const newCount = parseInt(newValue);
-      const targetCourse = cartCourses.find((item) => item.course.id === courseId);
+      const targetCourse = cartCourses.find(
+        (item) => item.course.id === courseId
+      );
 
       if (
         targetCourse &&
@@ -93,8 +111,6 @@ export default function Cart() {
         tour.setCartOverQuota();
         tour.setStep('cartGoRegistration');
       }
-      setEditingCourseId(null);
-      setEditingValue('');
       return;
     }
 
@@ -114,6 +130,26 @@ export default function Cart() {
         alert(`수정 실패: ${error.data.message || '알 수 없는 오류'}`);
       }
     }
+  };
+
+  const commitCartCount = async (courseId: number, rawValue: string) => {
+    if (rawValue === '') {
+      clearDraftCount(courseId);
+      return;
+    }
+
+    const parsed = parseInt(rawValue, 10);
+    const nextCount = Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
+
+    setDraftCount(courseId, String(nextCount));
+    await handleCartCountChange(courseId, String(nextCount));
+    clearDraftCount(courseId);
+  };
+
+  const stepCartCount = (courseId: number, cartCount: number, delta: number) => {
+    const current = parseInt(getDraftCount(courseId, cartCount), 10);
+    const base = Number.isNaN(current) ? cartCount : current;
+    void commitCartCount(courseId, String(Math.max(0, base + delta)));
   };
 
   const totalCredit = cartCourses.reduce(
@@ -139,8 +175,8 @@ export default function Cart() {
         <h1 className="cart-page-title">장바구니</h1>
 
         <div className="cart-notice-box" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-          <p className="cart-notice-date">※ 장바구니 숫자를 클릭하여 수정할 수 있습니다.</p>
-          <p className="cart-notice-date">※ 담은 수가 정원을 초과한 강의만 선착순 수강신청 가능합니다.</p>
+          <p className="cart-notice-date">※ 담은 수는 화살표 또는 직접 입력으로 수정할 수 있습니다.</p>
+          <p className="cart-notice-date">※ <strong>담은 수가 정원을 초과한 강의만 선착순 수강신청 가능합니다.</strong></p>
         </div>
 
         <div className="cart-content-wrapper">
@@ -152,6 +188,7 @@ export default function Cart() {
             >
               선택삭제
             </button>
+            <SnuttImportButton onClick={() => setSnuttImportOpen(true)} />
             <span className="cart-credit-info">
               신청가능학점 <span className="cart-credit-number">21</span>
               학점 / 담은 학점{' '}
@@ -170,9 +207,12 @@ export default function Cart() {
                 <p className="cart-empty-title">
                   장바구니가 비었습니다.
                   <br />
-                  검색 또는 관심강좌에서 수강신청 하실 강좌를 장바구니에
-                  담으세요.
+                  검색으로 담거나, SNUTT 시간표를 그대로 불러올 수 있어요.
                 </p>
+                <SnuttImportButton
+                  variant="cta"
+                  onClick={() => setSnuttImportOpen(true)}
+                />
               </div>
             ) : (
               <div className="resultListArea">
@@ -269,92 +309,81 @@ export default function Cart() {
                             <circle cx="20" cy="21" r="1" />
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                           </svg>
-                          {editingCourseId === item.course.id ? (
+                          <div
+                            className="cartCountControl"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <input
                               type="number"
-                              value={editingValue}
+                              value={getDraftCount(item.course.id, item.cartCount)}
                               onChange={(e) => {
                                 e.stopPropagation();
-                                setEditingValue(e.target.value);
+                                setDraftCount(item.course.id, e.target.value);
                               }}
                               onBlur={(e) => {
                                 e.stopPropagation();
-                                const finalValue =
-                                  editingValue === ''
-                                    ? isTourActive
-                                      ? '0'
-                                      : null
-                                    : editingValue;
-                                if (finalValue !== null) {
-                                  handleCartCountChange(
-                                    item.course.id,
-                                    finalValue
-                                  );
-                                }
-                                setEditingCourseId(null);
-                                setEditingValue('');
+                                void commitCartCount(
+                                  item.course.id,
+                                  e.target.value
+                                );
                               }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
-                                  e.stopPropagation();
-                                  const finalValue =
-                                    editingValue === ''
-                                      ? isTourActive
-                                        ? '0'
-                                        : null
-                                      : editingValue;
-                                  if (finalValue !== null) {
-                                    handleCartCountChange(
-                                      item.course.id,
-                                      finalValue
-                                    );
-                                  }
-                                  setEditingCourseId(null);
-                                  setEditingValue('');
+                                  e.currentTarget.blur();
                                 }
                               }}
-                              onClick={(e) => e.stopPropagation()}
                               className="cartCountInput"
                               data-tour-id={
                                 isTourActive ? 'cart-count' : undefined
                               }
                               min="0"
-                              autoFocus
+                              aria-label={`${item.course.courseTitle} 담은 수`}
                             />
-                          ) : (
-                            <span
-                              className="cartCountDisplay"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingCourseId(item.course.id);
-                                setEditingValue(
-                                  isTourActive ? '' : String(item.cartCount)
-                                );
-                              }}
-                              data-tour-id={
-                                isTourActive ? 'cart-count' : undefined
-                              }
-                            >
-                              {item.cartCount}
+                            <span className="cartCountStepper">
+                              <button
+                                type="button"
+                                className="cartCountStepBtn"
+                                aria-label="담은 수 1 증가"
+                                onClick={() =>
+                                  stepCartCount(item.course.id, item.cartCount, 1)
+                                }
+                              >
+                                <svg viewBox="0 0 10 6" aria-hidden="true">
+                                  <path
+                                    d="M1 4.5L5 1.5L9 4.5"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                type="button"
+                                className="cartCountStepBtn"
+                                aria-label="담은 수 1 감소"
+                                disabled={
+                                  Number(
+                                    getDraftCount(item.course.id, item.cartCount)
+                                  ) <= 0
+                                }
+                                onClick={() =>
+                                  stepCartCount(item.course.id, item.cartCount, -1)
+                                }
+                              >
+                                <svg viewBox="0 0 10 6" aria-hidden="true">
+                                  <path
+                                    d="M1 1.5L5 4.5L9 1.5"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
                             </span>
-                          )}
-                        </div>
-                        <div className="arrowBox">
-                          <svg
-                            width="10"
-                            height="16"
-                            viewBox="0 0 10 16"
-                            fill="none"
-                          >
-                            <path
-                              d="M1 1L8 8L1 15"
-                              stroke="#aaa"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -370,6 +399,10 @@ export default function Cart() {
         </div>
         </div>
       </div>
+
+      {isSnuttImportOpen && (
+        <SnuttImportModal onClose={() => setSnuttImportOpen(false)} />
+      )}
 
       <WarningModal.Alert
         isOpen={showDeleteSuccess}

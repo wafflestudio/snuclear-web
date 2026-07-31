@@ -118,17 +118,6 @@ export function SortableCourseItem({
           </svg>
           <span className={'cartCountNum red'}>{c.cartCount}</span>
         </div>
-        <div className="arrowBox">
-          <svg width="12" height="12" viewBox="0 0 10 18" fill="none">
-            <path
-              d="M1 1L9 9L1 17"
-              stroke="#000000"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
       </div>
     </div>
   );

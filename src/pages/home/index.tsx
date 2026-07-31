@@ -11,7 +11,7 @@ import {
 import { useAuth } from '@features/auth';
 import { useNoticesQuery } from '@features/notice';
 import { useSugangPeriodQuery } from '@features/course-sync';
-import { useMyPageQuery } from '@entities/user';
+import { useMyPageQuery, usePracticeSessionsQuery } from '@entities/user';
 import type {
   LeaderboardEntryResponse,
   LeaderboardResponse,
@@ -19,6 +19,8 @@ import type {
 } from '@features/leaderboard';
 import { DEFAULT_AVATAR } from '@shared/lib/defaultAvatar';
 import './home.css';
+
+const RECENT_SESSION_COUNT = 5;
 
 type FilterType = 'all' | 'weekly';
 type CategoryType = 'firstReaction' | 'secondReaction' | 'competitionRate';
@@ -130,6 +132,35 @@ export default function HomePage() {
     retry: false,
   });
 
+  // 내 연습 기록 패널 (기간안내 아래 좌측 컬럼)
+  const { data: myPracticeData, isLoading: isPracticeLoading } =
+    usePracticeSessionsQuery(0, RECENT_SESSION_COUNT, !!user);
+
+  const { data: myAllTimeRecord } = useQuery({
+    queryKey: ['leaderboard', 'my', 'all'],
+    queryFn: async () => {
+      const response = await getMyLeaderboardApi();
+      return response.data;
+    },
+    enabled: !!user,
+    retry: false,
+  });
+
+  const practiceItems = myPracticeData?.items;
+  const recentSessions = useMemo(() => practiceItems ?? [], [practiceItems]);
+  const totalPracticeCount = myPracticeData?.pageInfo.totalElements ?? 0;
+  const recentSuccessRate = useMemo(() => {
+    const totals = recentSessions.reduce(
+      (acc, session) => ({
+        attempts: acc.attempts + session.totalAttempts,
+        success: acc.success + session.successCount,
+      }),
+      { attempts: 0, success: 0 }
+    );
+    if (totals.attempts === 0) return null;
+    return Math.round((totals.success / totals.attempts) * 100);
+  }, [recentSessions]);
+
   const getEntries = (): LeaderboardEntryResponse[] => {
     if (!leaderboardData) return [];
     return getCategoryData(leaderboardData, category).items.slice(0, 5);
@@ -224,6 +255,130 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
+            </section>
+
+            <section className="panel practicePanel">
+              <div className="panelHead">
+                <div className="panelTitle">내 연습 기록</div>
+                {user && totalPracticeCount > 0 && (
+                  <button
+                    type="button"
+                    className="home-notice-detail-btn"
+                    onClick={() => navigate('/practice-results')}
+                  >
+                    상세보기
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M9 6l6 6-6 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              <div className="panelBody practiceBody">
+                {!user ? (
+                  <div className="practiceEmpty">
+                    <p className="practiceEmptyText">
+                      로그인하고 내 연습 기록을 확인해 보세요.
+                    </p>
+                    <Link to="/login" className="practiceCta">
+                      로그인하기
+                    </Link>
+                  </div>
+                ) : isPracticeLoading ? (
+                  <div className="practiceEmpty">
+                    <p className="practiceEmptyText">불러오는 중…</p>
+                  </div>
+                ) : totalPracticeCount === 0 ? (
+                  <div className="practiceEmpty">
+                    <p className="practiceEmptyText">
+                      아직 연습 기록이 없어요.
+                      <br />
+                      실전처럼 수강신청을 연습해 보세요.
+                    </p>
+                    <Link to="/registration" className="practiceCta">
+                      수강신청 연습 시작하기
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <div className="practiceStats">
+                      <div className="practiceStat">
+                        <span className="practiceStatLabel">총 연습</span>
+                        <span className="practiceStatValue">
+                          {totalPracticeCount}
+                          <em>회</em>
+                        </span>
+                      </div>
+                      <div className="practiceStat">
+                        <span className="practiceStatLabel">
+                          최근 {recentSessions.length}회 성공률
+                        </span>
+                        <span className="practiceStatValue">
+                          {recentSuccessRate === null
+                            ? '-'
+                            : recentSuccessRate}
+                          {recentSuccessRate !== null && <em>%</em>}
+                        </span>
+                      </div>
+                      <div className="practiceStat">
+                        <span className="practiceStatLabel">
+                          1픽 최고 반응속도
+                        </span>
+                        <span className="practiceStatValue">
+                          {myAllTimeRecord?.bestFirstReactionTime ?? '-'}
+                          {myAllTimeRecord?.bestFirstReactionTime != null && (
+                            <em>ms</em>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    <ul className="practiceList">
+                      {recentSessions.map((session) => {
+                        const rate =
+                          session.totalAttempts === 0
+                            ? 0
+                            : Math.round(
+                                (session.successCount / session.totalAttempts) *
+                                  100
+                              );
+                        return (
+                          <li key={session.id} className="practiceListItem">
+                            <button
+                              type="button"
+                              className="practiceListBtn"
+                              onClick={() =>
+                                navigate(`/practice-session/${session.id}`)
+                              }
+                            >
+                              <span className="practiceDate">
+                                {formatNoticeDate(session.practiceAt)}
+                              </span>
+                              <span className="practiceScore">
+                                성공 {session.successCount}/
+                                {session.totalAttempts}
+                              </span>
+                              <span className="practiceBar">
+                                <span
+                                  className="practiceBarFill"
+                                  style={{ width: `${rate}%` }}
+                                />
+                              </span>
+                              <span className="practiceRate">{rate}%</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </>
+                )}
+              </div>
             </section>
           </div>
 

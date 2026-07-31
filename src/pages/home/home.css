@@ -28,14 +28,17 @@
   letter-spacing: -1px;
   word-break: keep-all;
 }
-.rightButtons {
+.practicePanel {
   order: 3;
 }
-.noticePanel {
+.rightButtons {
   order: 4;
 }
-.leaderBoardPanel {
+.noticePanel {
   order: 5;
+}
+.leaderBoardPanel {
+  order: 6;
 }
 
 /* ===== Desktop: 2-column grid ===== */
@@ -80,6 +83,174 @@
 
   .leaderBoardPanel {
     order: unset;
+  }
+
+  .practicePanel {
+    order: unset;
+  }
+}
+
+/* ===== 내 연습 기록 패널 ===== */
+.practicePanel .panelHead {
+  align-items: center;
+}
+
+.practiceBody {
+  padding: 18px 22px 20px;
+  margin: 0 22px 18px;
+}
+
+.practiceStats {
+  display: flex;
+  align-items: stretch;
+}
+
+.practiceStat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.practiceStat + .practiceStat {
+  border-left: 1px solid #eee;
+}
+
+.practiceStatLabel {
+  font-size: 13px;
+  color: #888;
+}
+
+.practiceStatValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: -0.5px;
+}
+
+.practiceStatValue em {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  color: #888;
+}
+
+.practiceList {
+  display: flex;
+  flex-direction: column;
+  margin: 18px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid #eee;
+  list-style: none;
+}
+
+.practiceListBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.practiceListBtn:hover {
+  background-color: #f5f8fd;
+}
+
+.practiceDate {
+  flex-shrink: 0;
+  width: 44px;
+  font-size: 13px;
+  color: #888;
+  text-align: left;
+}
+
+.practiceScore {
+  flex-shrink: 0;
+  width: 74px;
+  font-size: 13px;
+  color: #444;
+  text-align: left;
+}
+
+.practiceBar {
+  flex: 1;
+  height: 6px;
+  min-width: 40px;
+  border-radius: 3px;
+  background-color: #eef1f6;
+  overflow: hidden;
+}
+
+.practiceBarFill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background-color: var(--blue);
+}
+
+.practiceRate {
+  flex-shrink: 0;
+  width: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  text-align: right;
+}
+
+.practiceEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 0 12px;
+}
+
+.practiceEmptyText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #888;
+  text-align: center;
+}
+
+.practiceCta {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background-color: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.practiceCta:hover {
+  opacity: 0.88;
+}
+
+@media (max-width: 768px) {
+  .practiceBody {
+    padding: 16px 0 18px;
+    margin: 0 18px 16px;
+  }
+
+  .practiceStatValue {
+    font-size: 19px;
+  }
+
+  .practiceScore {
+    width: 66px;
   }
 }
 

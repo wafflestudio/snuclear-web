@@ -277,14 +277,13 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-right: 12px;
+  margin-right: 24px;
 }
 
 .cartInfoBox {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-right: 22px;
   color: #888;
 }
 
@@ -302,13 +301,6 @@
 
 .cartCountNum.red {
   color: #e02d1b;
-}
-
-.arrowBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
 /* 오른쪽 칼럼 내부: 플로팅 메뉴 디자인 */
