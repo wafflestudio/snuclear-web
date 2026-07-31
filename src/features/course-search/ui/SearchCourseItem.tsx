@@ -7,6 +7,7 @@ export interface SearchCourseItemProps {
   isSelected: boolean;
   cartCount?: number;
   onSelect: () => void;
+  checkDataTourId?: string;
 }
 
 export function SearchCourseItem({
@@ -14,6 +15,7 @@ export function SearchCourseItem({
   isSelected,
   cartCount = 0,
   onSelect,
+  checkDataTourId,
 }: SearchCourseItemProps) {
   const schedule = useMemo(
     () => formatSchedule(course.placeAndTime, '시간 미정'),
@@ -35,6 +37,7 @@ export function SearchCourseItem({
         <button
           type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
+          data-tour-id={checkDataTourId}
         >
           <svg
             className="checkIcon"
