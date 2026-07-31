@@ -73,9 +73,9 @@ export const useTourStore = create<TourStoreState>((set) => ({
 
   complete: () =>
     set({
+      ...initialRuntimeState,
       isActive: false,
       currentStep: null,
-      isRegistrationSucceeded: true,
       isManuallyStopped: false,
     }),
 

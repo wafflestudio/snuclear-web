@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
 import { WarningModal } from '@shared/ui/Warning';
@@ -92,7 +92,7 @@ const TOUR_STEP_META: Record<
   },
   historyResult: {
     targetId: 'enrollment-result',
-    message: '',
+    message: '해당 페이지에서 수강신청 내역을 확인할 수 있습니다.',
     placement: 'top',
   },
 };
@@ -112,8 +112,10 @@ export function TourController() {
   const [isIntroOpen, setIntroOpen] = useState(false);
   const [doNotShowAgain, setDoNotShowAgain] = useState(false);
   const [isDismissNoticeOpen, setDismissNoticeOpen] = useState(false);
+  const [isDismissErrorOpen, setDismissErrorOpen] = useState(false);
   const [isExitConfirmOpen, setExitConfirmOpen] = useState(false);
   const completionSentRef = useRef(false);
+  const completionTimerRef = useRef<number | null>(null);
 
   const {
     isActive,
@@ -136,11 +138,6 @@ export function TourController() {
     enabled: !!user && !user.admin && isDesktop,
     retry: 1,
     refetchOnWindowFocus: false,
-  });
-
-  const completionMutation = useMutation({
-    mutationFn: (targetPublishedAt: string) =>
-      completeTourApi({ publishedAt: targetPublishedAt }),
   });
 
   useEffect(() => {
@@ -219,6 +216,14 @@ export function TourController() {
   ]);
 
   useEffect(() => {
+    return () => {
+      if (completionTimerRef.current !== null) {
+        window.clearTimeout(completionTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isActive || currentStep !== 'historyResult') return;
     if (completionSentRef.current) return;
 
@@ -226,7 +231,7 @@ export function TourController() {
     const finish = async () => {
       if (publishedAt) {
         try {
-          await completionMutation.mutateAsync(publishedAt);
+          await completeTourApi({ publishedAt });
         } catch (error) {
           console.error('[Tour] completion failed:', error);
         }
@@ -234,9 +239,11 @@ export function TourController() {
       complete();
     };
 
-    const timerId = window.setTimeout(finish, 700);
-    return () => window.clearTimeout(timerId);
-  }, [complete, completionMutation, currentStep, isActive, publishedAt]);
+    completionTimerRef.current = window.setTimeout(() => {
+      completionTimerRef.current = null;
+      void finish();
+    }, 2500);
+  }, [complete, currentStep, isActive, publishedAt]);
 
   const handleStart = () => {
     completionSentRef.current = false;
@@ -252,11 +259,12 @@ export function TourController() {
 
     if (doNotShowAgain && publishedAt) {
       try {
-        await completionMutation.mutateAsync(publishedAt);
+        await completeTourApi({ publishedAt });
+        setDismissNoticeOpen(true);
       } catch (error) {
         console.error('[Tour] dismiss completion failed:', error);
+        setDismissErrorOpen(true);
       }
-      setDismissNoticeOpen(true);
     }
 
     setDoNotShowAgain(false);
@@ -314,9 +322,19 @@ export function TourController() {
         </p>
       </WarningModal.Alert>
 
+      <WarningModal.Alert
+        isOpen={isDismissErrorOpen}
+        onClose={() => setDismissErrorOpen(false)}
+        icon="warning"
+      >
+        <p className="warningText">
+          다시보지 않기 저장에 실패했습니다. 다음 로그인 시 튜토리얼 안내가
+          다시 표시될 수 있습니다.
+        </p>
+      </WarningModal.Alert>
+
       {isActive &&
         currentStep &&
-        currentStep !== 'historyResult' &&
         !isExitConfirmOpen &&
         createPortal(
           <TourOverlay

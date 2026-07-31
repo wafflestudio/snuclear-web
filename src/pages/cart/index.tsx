@@ -280,11 +280,17 @@ export default function Cart() {
                               onBlur={(e) => {
                                 e.stopPropagation();
                                 const finalValue =
-                                  editingValue === '' ? '0' : editingValue;
-                                handleCartCountChange(
-                                  item.course.id,
-                                  finalValue
-                                );
+                                  editingValue === ''
+                                    ? isTourActive
+                                      ? '0'
+                                      : null
+                                    : editingValue;
+                                if (finalValue !== null) {
+                                  handleCartCountChange(
+                                    item.course.id,
+                                    finalValue
+                                  );
+                                }
                                 setEditingCourseId(null);
                                 setEditingValue('');
                               }}
@@ -293,11 +299,17 @@ export default function Cart() {
                                   e.preventDefault();
                                   e.stopPropagation();
                                   const finalValue =
-                                    editingValue === '' ? '0' : editingValue;
-                                  handleCartCountChange(
-                                    item.course.id,
-                                    finalValue
-                                  );
+                                    editingValue === ''
+                                      ? isTourActive
+                                        ? '0'
+                                        : null
+                                      : editingValue;
+                                  if (finalValue !== null) {
+                                    handleCartCountChange(
+                                      item.course.id,
+                                      finalValue
+                                    );
+                                  }
                                   setEditingCourseId(null);
                                   setEditingValue('');
                                 }
@@ -316,7 +328,9 @@ export default function Cart() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingCourseId(item.course.id);
-                                setEditingValue('');
+                                setEditingValue(
+                                  isTourActive ? '' : String(item.cartCount)
+                                );
                               }}
                               data-tour-id={
                                 isTourActive ? 'cart-count' : undefined

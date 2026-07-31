@@ -6,5 +6,5 @@ export const getTourStatusApi = async () => {
 };
 
 export const completeTourApi = async (data: TourCompletionRequest) => {
-  return api.post<void>('/api/tour/completion', data);
+  return api.put<void>('/api/tour/completion', data);
 };

@@ -9,7 +9,7 @@ import './enrollmentHistory.css';
 
 export default function EnrollmentHistory() {
   const tour = useTourStore();
-  const isTourResult = tour.isRegistrationSucceeded;
+  const isTourResult = tour.isActive && tour.currentStep === 'historyResult';
   const { data: enrolledData, isLoading: isEnrolledLoading } = useEnrolledCoursesQuery();
   const { data: cartData, isLoading: isCartLoading } = useCartQuery();
 
