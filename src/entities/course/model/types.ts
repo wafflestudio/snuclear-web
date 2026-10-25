@@ -27,7 +27,7 @@ export interface CourseDetailResponse {
   registrationCount: number;
 }
 
-export interface CourseSearchRequest {
+export type CourseSearchRequest = {
   query?: string;
   courseNumber?: string;
   academicCourse?: string;
@@ -37,7 +37,7 @@ export interface CourseSearchRequest {
   classification?: string;
   page: number;
   size: number;
-}
+};
 
 export interface CourseSearchResponse {
   items: CourseDetailResponse[];
