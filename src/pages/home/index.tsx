@@ -18,6 +18,7 @@ import type {
   MyLeaderboardResponse,
 } from '@features/leaderboard';
 import { DEFAULT_AVATAR } from '@shared/lib/defaultAvatar';
+import { getKoreaDate, getPeriodStatus } from './sugangPeriod';
 import './home.css';
 
 const RECENT_SESSION_COUNT = 5;
@@ -62,20 +63,6 @@ function parseHeaderParts(header: string) {
   return { year, periodText, note };
 }
 
-function parseDateRange(dateStr: string): { start: string; end: string } | null {
-  // "2026-02-24(화) ~ 2026-02-24(화)" or "2026-03-10(화) ~ 2026-04-21(화)"
-  const matches = dateStr.match(/(\d{4}-\d{2}-\d{2})/g);
-  if (!matches || matches.length < 2) return null;
-  return { start: matches[0], end: matches[1] };
-}
-
-function isCurrentPeriod(dateStr: string): boolean {
-  const range = parseDateRange(dateStr);
-  if (!range) return false;
-  const today = new Date().toISOString().slice(0, 10);
-  return today >= range.start && today <= range.end;
-}
-
 export default function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -83,6 +70,10 @@ export default function HomePage() {
   const [category, setCategory] = useState<CategoryType>('firstReaction');
   const { data: myProfile } = useMyPageQuery();
   const { data: sugangPeriod } = useSugangPeriodQuery();
+  const today = getKoreaDate();
+  const visiblePeriods = (sugangPeriod?.body ?? []).filter(
+    (row) => getPeriodStatus(row.date, today) !== 'past',
+  );
   const headerParts = useMemo(
     () => sugangPeriod ? parseHeaderParts(sugangPeriod.header) : null,
     [sugangPeriod],
@@ -228,10 +219,21 @@ export default function HomePage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {sugangPeriod.body.map((row, index) => (
+                        {visiblePeriods.length === 0 && (
+                          <tr>
+                            <td colSpan={4}>
+                              현재 진행 중이거나 예정된 수강신청 일정이 없습니다.
+                            </td>
+                          </tr>
+                        )}
+                        {visiblePeriods.map((row, index) => (
                           <tr
                             key={index}
-                            className={isCurrentPeriod(row.date) ? 'currentPeriod' : ''}
+                            className={
+                              getPeriodStatus(row.date, today) === 'current'
+                                ? 'currentPeriod'
+                                : ''
+                            }
                           >
                             <td data-label="수강신청 구분">{row.category}</td>
                             <td data-label="일자">{row.date}</td>
