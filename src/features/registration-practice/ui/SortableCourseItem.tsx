@@ -9,12 +9,14 @@ export interface SortableCourseItemProps {
   courseData: CourseData;
   isSelected: boolean;
   onSelect: () => void;
+  checkDataTourId?: string;
 }
 
 export function SortableCourseItem({
   courseData,
   isSelected,
   onSelect,
+  checkDataTourId,
 }: SortableCourseItemProps) {
   const {
     attributes,
@@ -58,6 +60,7 @@ export function SortableCourseItem({
           type="button"
           className={`customCheckBtn ${isSelected ? 'checked' : ''}`}
           aria-label={`${c.course.courseTitle} 선택`}
+          data-tour-id={checkDataTourId}
         >
           <svg
             viewBox="0 0 24 24"

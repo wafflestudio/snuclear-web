@@ -1,0 +1,147 @@
+.tourIntroCheck {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.tourIntroCheck input {
+  width: 16px;
+  height: 16px;
+  accent-color: #1b4594;
+}
+
+.tourLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.tourBlocker {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.72);
+  pointer-events: auto;
+}
+
+.tourBlocker.top {
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.tourBlocker.left {
+  left: 0;
+}
+
+.tourBlocker.right {
+  right: 0;
+}
+
+.tourBlocker.bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.tourFocusRing {
+  position: fixed;
+  outline: 3px solid #ffffff;
+  outline-offset: 0;
+  border: 2px solid #376dc8;
+  border-radius: 8px;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.tourTooltip {
+  position: fixed;
+  z-index: 10002;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  border: 1px solid #e5e7eb;
+  pointer-events: none;
+  max-width: min(320px, calc(100vw - 32px));
+}
+
+.tourTooltip p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-align: left;
+  letter-spacing: 0;
+}
+
+.tourTooltipArrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.tourTooltip.bottom .tourTooltipArrow {
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+}
+
+.tourTooltip.top .tourTooltipArrow {
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ffffff;
+}
+
+.tourTooltip.left .tourTooltipArrow {
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #ffffff;
+}
+
+.tourTooltip.right .tourTooltipArrow {
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #ffffff;
+}
+
+.tourExitBtn {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 10003;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  padding: 0 0 2px;
+}
+
+.tourExitBtn:hover {
+  background: rgba(0, 0, 0, 0.68);
+}

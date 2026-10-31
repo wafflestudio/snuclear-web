@@ -1,18 +1,23 @@
 import { useState, useMemo } from 'react';
 import { useEnrolledCoursesQuery } from '@features/registration-practice';
 import { useCartQuery } from '@features/cart-management';
+import { tutorialCourse, useTourStore } from '@features/tour';
 import { useModalStore } from '@shared/model/modalStore';
 import { TimeTable } from '@widgets/timetable';
 import { formatSchedule } from '@shared/lib/timeUtils';
 import './enrollmentHistory.css';
 
 export default function EnrollmentHistory() {
+  const tour = useTourStore();
+  const isTourResult = tour.isActive && tour.currentStep === 'historyResult';
   const { data: enrolledData, isLoading: isEnrolledLoading } = useEnrolledCoursesQuery();
   const { data: cartData, isLoading: isCartLoading } = useCartQuery();
 
-  const isLoading = isEnrolledLoading || isCartLoading;
+  const isLoading = isTourResult ? false : isEnrolledLoading || isCartLoading;
 
   const enrolledCourses = useMemo(() => {
+    if (isTourResult) return [tutorialCourse];
+
     const enrolled = Array.isArray(enrolledData) ? enrolledData : [];
     const cartCourses = Array.isArray(cartData) ? cartData : [];
 
@@ -30,7 +35,7 @@ export default function EnrollmentHistory() {
     }
 
     return merged;
-  }, [enrolledData, cartData]);
+  }, [cartData, enrolledData, isTourResult]);
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const { openNotSupported } = useModalStore();
 
@@ -109,6 +114,9 @@ export default function EnrollmentHistory() {
                         <div
                           key={course.id}
                           className="courseItem"
+                          data-tour-id={
+                            isTourResult ? 'enrollment-result' : undefined
+                          }
                           onClick={(event) => {
                             const infoArea =
                               event.currentTarget.querySelector<HTMLElement>(

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@features/auth';
+import { TOUR_KEYWORD, useIsDesktop, useTourStore } from '@features/tour';
 import { useModalStore } from '@shared/model/modalStore';
 import { WarningModal } from '@shared/ui/Warning';
 import { MobilePageNav } from '@widgets/mobile-page-nav';
@@ -15,6 +16,8 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
   const loc = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isDesktop = useIsDesktop();
+  const tour = useTourStore();
   const {
     showLoginWarning,
     showNotSupported,
@@ -29,8 +32,22 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
   const mobileSearchInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleSearch = () => {
-    const query = searchInputRef.current?.value || '';
-    navigate(`/search?query=${encodeURIComponent(query)}`);
+    const query = searchInputRef.current?.value.trim() || '';
+
+    if (tour.isActive && tour.currentStep === 'searchType') {
+      if (query !== TOUR_KEYWORD) {
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      tour.setStep('searchCheck');
+      navigate(`/search?query=${encodeURIComponent(query)}&tour=1`);
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    const tourParam = tour.isActive ? '&tour=1' : '';
+    navigate(`/search?query=${encodeURIComponent(query)}${tourParam}`);
     window.scrollTo(0, 0);
   };
 
@@ -62,6 +79,46 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
     if (!user) {
       e.preventDefault();
       openLoginWarning();
+    }
+  };
+
+  const handleSearchInputClick = () => {
+    if (tour.isActive && tour.currentStep === 'searchIntro') {
+      tour.setStep('searchType');
+      searchInputRef.current?.focus();
+    }
+  };
+
+  const handleTourStart = () => {
+    if (!user) {
+      openLoginWarning();
+      return;
+    }
+
+    tour.start(tour.publishedAt);
+    navigate('/');
+    window.scrollTo(0, 0);
+  };
+
+  const handleRegistrationNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    handleProtectedClick(e);
+    if (!e.defaultPrevented && tour.isActive && tour.currentStep === 'cartGoRegistration') {
+      tour.setStep('registrationTimer');
+    }
+  };
+
+  const handleEnrollmentHistoryNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>
+  ) => {
+    handleProtectedClick(e);
+    if (
+      !e.defaultPrevented &&
+      tour.isActive &&
+      tour.currentStep === 'registrationGoHistory'
+    ) {
+      tour.setStep('historyResult');
     }
   };
 
@@ -112,7 +169,7 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
           </Link>
 
           <div className="searchArea">
-            <div className="searchBox">
+            <div className="searchBox" data-tour-id="header-search-box">
               <select className="searchSelect" aria-hidden="true" disabled>
                 <option>Search</option>
               </select>
@@ -123,6 +180,8 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
                 placeholder="전체 강좌 검색은 돋보기 버튼을 클릭하세요"
                 ref={searchInputRef}
                 onKeyDown={handleKeyDown}
+                onClick={handleSearchInputClick}
+                data-tour-id="header-search-input"
               />
               <button
                 className="iconBtn"
@@ -339,14 +398,16 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
             <Link
               className={`gnbItem ${loc.pathname === '/registration' ? 'active' : ''}`}
               to="/registration"
-              onClick={handleProtectedClick}
+              onClick={handleRegistrationNavClick}
+              data-tour-id="nav-registration"
             >
               수강신청
             </Link>
             <Link
               className={`gnbItem ${loc.pathname === '/enrollment-history' ? 'active' : ''}`}
               to="/enrollment-history"
-              onClick={handleProtectedClick}
+              onClick={handleEnrollmentHistoryNavClick}
+              data-tour-id="nav-enrollment-history"
             >
               수강신청내역
             </Link>
@@ -363,6 +424,15 @@ export default function Header({ handleLogout, onToggleSideMenu }: HeaderProps) 
             >
               리더보드
             </Link>
+            {isDesktop && (
+              <button
+                type="button"
+                className="gnbItem gnbButton"
+                onClick={handleTourStart}
+              >
+                튜토리얼
+              </button>
+            )}
           </nav>
         </div>
       </div>

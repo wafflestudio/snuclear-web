@@ -10,11 +10,23 @@ import { useModalStore } from '@shared/model/modalStore';
 import { WarningModal } from '@shared/ui/Warning';
 import { TimeTable } from '@widgets/timetable';
 import { formatSchedule } from '@shared/lib/timeUtils';
+import { createTutorialPreEnroll, useTourStore } from '@features/tour';
 import './cart.css';
 
 export default function Cart() {
+  const tour = useTourStore();
+  const isTourActive = tour.isActive;
   const { data, isLoading } = useCartQuery();
-  const cartCourses = Array.isArray(data) ? data : [];
+  const isDisplayLoading = isTourActive ? false : isLoading;
+  const cartCourses = useMemo(
+    () =>
+      isTourActive
+        ? [createTutorialPreEnroll(tour.cartCount)]
+        : Array.isArray(data)
+          ? data
+          : [],
+    [data, isTourActive, tour.cartCount]
+  );
   const deleteFromCartMutation = useDeleteFromCartMutation();
   const updateCartCountMutation = useUpdateCartCountMutation();
   const {
@@ -85,6 +97,23 @@ export default function Cart() {
   };
 
   const handleCartCountChange = async (courseId: number, newValue: string) => {
+    if (isTourActive) {
+      const newCount = parseInt(newValue);
+      const targetCourse = cartCourses.find(
+        (item) => item.course.id === courseId
+      );
+
+      if (
+        targetCourse &&
+        !isNaN(newCount) &&
+        newCount > targetCourse.course.quota
+      ) {
+        tour.setCartOverQuota();
+        tour.setStep('cartGoRegistration');
+      }
+      return;
+    }
+
     const newCount = parseInt(newValue);
     if (isNaN(newCount) || newCount < 0) {
       return;
@@ -104,6 +133,11 @@ export default function Cart() {
   };
 
   const commitCartCount = async (courseId: number, rawValue: string) => {
+    if (rawValue === '') {
+      clearDraftCount(courseId);
+      return;
+    }
+
     const parsed = parseInt(rawValue, 10);
     const nextCount = Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
 
@@ -164,7 +198,7 @@ export default function Cart() {
           </div>
 
           <div className={`cart-content-box${cartCourses.length > 0 ? ' has-items' : ''}`}>
-            {isLoading ? (
+            {isDisplayLoading ? (
               <div className="cart-empty-state">
                 <p className="cart-empty-title">로딩 중...</p>
               </div>
@@ -288,7 +322,10 @@ export default function Cart() {
                               }}
                               onBlur={(e) => {
                                 e.stopPropagation();
-                                commitCartCount(item.course.id, e.target.value);
+                                void commitCartCount(
+                                  item.course.id,
+                                  e.target.value
+                                );
                               }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
@@ -297,6 +334,9 @@ export default function Cart() {
                                 }
                               }}
                               className="cartCountInput"
+                              data-tour-id={
+                                isTourActive ? 'cart-count' : undefined
+                              }
                               min="0"
                               aria-label={`${item.course.courseTitle} 담은 수`}
                             />

@@ -273,6 +273,12 @@
   color: #222;
   font-weight: 400;
 }
+.gnbButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
 .gnbItem.active {
   color: #376dc8;
   text-underline-offset: 6px;

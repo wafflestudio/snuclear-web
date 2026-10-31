@@ -13,6 +13,7 @@ interface ConfirmProps {
   subtitle?: string;
   cancelLabel?: string;
   confirmLabel?: string;
+  confirmButtonDataTourId?: string;
   children?: ReactNode;
   enterAction?: 'confirm' | 'cancel';
 }
@@ -51,6 +52,7 @@ export function Confirm({
   subtitle,
   cancelLabel = '취소',
   confirmLabel = '확인',
+  confirmButtonDataTourId,
   children,
   enterAction = 'confirm',
 }: ConfirmProps) {
@@ -83,7 +85,11 @@ export function Confirm({
           <button className="success-btn gray" onClick={onCancel}>
             {cancelLabel}
           </button>
-          <button className="success-btn blue" onClick={onConfirm}>
+          <button
+            className="success-btn blue"
+            onClick={onConfirm}
+            data-tour-id={confirmButtonDataTourId}
+          >
             {confirmLabel}
           </button>
         </div>
